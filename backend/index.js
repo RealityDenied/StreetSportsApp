@@ -25,6 +25,11 @@ app.use('/api/test', testRoutes);
 const authRoutes = require('./routes/authRoutes');
 app.use('/api/auth', authRoutes);
 
+//user routes
+const userRoutes =require("./routes/userRoutes.js");
+app.use("/api/user", userRoutes);
+
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server listening on http://localhost:${PORT}`));
 

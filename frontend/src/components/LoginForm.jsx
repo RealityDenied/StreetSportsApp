@@ -9,15 +9,23 @@ export default function LoginForm({ onSwitch, onForgot }) {
   };
 
   const handleLogin = async (e) => {
-    e.preventDefault();
-    try {
-      const res = await api.post("/auth/login", form);
-      alert(res.data.message);
-      localStorage.setItem("token", res.data.token);
-    } catch (err) {
-      alert(err.response?.data?.message || "Login failed");
+  e.preventDefault();
+  try {
+    const res = await api.post("/auth/login", form);
+    localStorage.setItem("token", res.data.token);
+
+    // fetch user info
+    const me = await api.get("/user/me");
+    if (!me.data.profileCompleted) {
+      window.location.href = "/onboarding";
+    } else {
+      window.location.href = "/home";
     }
-  };
+  } catch (err) {
+    alert(err.response?.data?.message || "Login failed");
+  }
+};
+
 
   return (
     <form

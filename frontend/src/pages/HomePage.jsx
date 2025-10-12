@@ -1,16 +1,57 @@
-import { Link } from 'react-router-dom';
+import { useEffect, useState } from "react";
+import api from "../api/api";
+import ProfileCard from "../components/ProfileCard";
 
 export default function HomePage() {
-  console.log('HomePage is rendering');
-  return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-4xl font-bold text-gray-800 mb-6">Welcome to Street Sports</h1>
-      <p className="text-gray-600">Find and join street sports events in your area!</p>
-      <div className="mt-4">
-        <Link to="/auth" className="text-blue-500 hover:text-blue-700">
-          Go to Auth Page
-        </Link>
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await api.get("/user/me");
+        setUser(res.data);
+      } catch (err) {
+        console.error(err);
+        alert("Session expired, please login again");
+        localStorage.removeItem("token");
+        window.location.href = "/auth";
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUser();
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    window.location.href = "/auth";
+  };
+
+  if (loading)
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-100">
+        <div className="text-lg font-semibold text-gray-600 animate-pulse">
+          Loading your profile...
+        </div>
       </div>
+    );
+
+  return (
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-blue-500 to-purple-700 p-6 text-white">
+      <h1 className="text-3xl font-bold mb-6">
+        👋 Welcome back, {user?.name?.split(" ")[0]}!
+      </h1>
+
+      <ProfileCard user={user} />
+
+      <button
+        onClick={handleLogout}
+        className="mt-6 bg-red-500 hover:bg-red-600 px-6 py-2 rounded-lg text-white transition"
+      >
+        Logout
+      </button>
     </div>
   );
 }

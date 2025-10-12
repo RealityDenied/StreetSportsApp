@@ -7,7 +7,7 @@ const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 // Helper: generate token
 const generateToken = (user) => {
   return jwt.sign(
-    { id: user._id, email: user.email, roles: user.roles },
+    { id: user._id, email: user.email, role: user.role },
     process.env.JWT_SECRET,
     { expiresIn: '7d' }
   );
@@ -16,17 +16,17 @@ const generateToken = (user) => {
 // REGISTER (manual signup)
 exports.registerUser = async (req, res) => {
   try {
-    const { name, email, password, roles } = req.body; //destructuring syntax
+    const { name, email, password, role } = req.body; //destructuring syntax
     const existingUser = await User.findOne({ email });
     if (existingUser) return res.status(400).json({ message: "Email already registered" });
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = await User.create({ name, email, password: hashedPassword, roles });
+    const newUser = await User.create({ name, email, password: hashedPassword, role });
     //User.create({
     //   name: name,
     //   email: email,
     //   password: hashedPassword,
-    //   roles: roles
+    //   role: role
     // });
 
     const token = generateToken(newUser);
@@ -72,7 +72,7 @@ exports.googleAuth = async (req, res) => {
     // check existing user
     let user = await User.findOne({ email });
     if (!user) {
-      user = await User.create({ name, email, googleId, roles: ['viewer'] });
+      user = await User.create({ name, email, googleId, role: ['viewer'] });
     }
 
     const token = generateToken(user);
