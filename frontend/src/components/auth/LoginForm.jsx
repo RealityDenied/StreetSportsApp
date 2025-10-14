@@ -1,5 +1,5 @@
 import { useState } from "react";
-import api from "../api/api";
+import api from "../../api/api";
 
 export default function LoginForm({ onSwitch, onForgot }) {
   const [form, setForm] = useState({ email: "", password: "" });

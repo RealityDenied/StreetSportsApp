@@ -1,16 +1,29 @@
 import { useEffect, useState } from "react";
 import api from "../api/api";
-import ProfileCard from "../components/ProfileCard";
+import socketService from "../services/socket";
+import NotificationBar from "../components/ui/NotificationBar";
+import MyEventsSection from "../components/event/MyEventsSection";
+import AllEventsPanel from "../components/event/AllEventsPanel";
+import CreateEventModal from "../components/event/CreateEventModal";
+import SettingsDropdown from "../components/ui/SettingsDropdown";
 
 export default function HomePage() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState(null);
 
   useEffect(() => {
     const fetchUser = async () => {
       try {
         const res = await api.get("/user/me");
         setUser(res.data);
+        
+        // Connect to WebSocket
+        const token = localStorage.getItem("token");
+        if (token) {
+          socketService.connect(token, res.data._id);
+        }
       } catch (err) {
         console.error(err);
         alert("Session expired, please login again");
@@ -22,36 +35,199 @@ export default function HomePage() {
     };
 
     fetchUser();
+
+    // Cleanup on unmount
+    return () => {
+      socketService.disconnect();
+    };
   }, []);
 
+  // WebSocket event listeners
+  useEffect(() => {
+    if (!socketService.isSocketConnected()) return;
+
+    const handleEventCreated = (data) => {
+      console.log('New event created:', data);
+      // Trigger refresh of events lists
+      window.location.reload(); // Temporary - will be replaced with state updates
+    };
+
+    const handleTeamCreated = (data) => {
+      console.log('New team created:', data);
+      // Update UI to reflect new team
+    };
+
+    const handleMatchCreated = (data) => {
+      console.log('New match created:', data);
+      // Update UI to reflect new match
+    };
+
+    const handleMatchResultUpdated = (data) => {
+      console.log('Match result updated:', data);
+      // Update UI to reflect match results
+    };
+
+    const handleRequestReceived = (data) => {
+      console.log('New request received:', data);
+      // Show notification or update notification bar
+    };
+
+    const handleRequestAccepted = (data) => {
+      console.log('Request accepted:', data);
+      // Update UI to reflect accepted request
+    };
+
+    const handleRequestRejected = (data) => {
+      console.log('Request rejected:', data);
+      // Update UI to reflect rejected request
+    };
+
+    // Register event listeners
+    socketService.onEventCreated(handleEventCreated);
+    socketService.onTeamCreated(handleTeamCreated);
+    socketService.onMatchCreated(handleMatchCreated);
+    socketService.onMatchResultUpdated(handleMatchResultUpdated);
+    socketService.onRequestReceived(handleRequestReceived);
+    socketService.onRequestAccepted(handleRequestAccepted);
+    socketService.onRequestRejected(handleRequestRejected);
+
+    // Cleanup listeners
+    return () => {
+      socketService.removeAllListeners('eventCreated');
+      socketService.removeAllListeners('teamCreated');
+      socketService.removeAllListeners('matchCreated');
+      socketService.removeAllListeners('matchResultUpdated');
+      socketService.removeAllListeners('requestReceived');
+      socketService.removeAllListeners('requestAccepted');
+      socketService.removeAllListeners('requestRejected');
+    };
+  }, [socketService.isSocketConnected()]);
+
   const handleLogout = () => {
+    socketService.disconnect();
     localStorage.removeItem("token");
     window.location.href = "/auth";
   };
 
+  const handleEventCreated = (event) => {
+    // This will trigger a refresh of the events lists
+    window.location.reload(); // Temporary - will be replaced with WebSocket updates
+  };
+
+  const handleEventClick = (event) => {
+    setSelectedEvent(event);
+    // Could open event details modal or navigate to event page
+    console.log('Event clicked:', event);
+  };
+
+  const handleRequestUpdate = () => {
+    // Refresh notifications or update UI
+    console.log('Request updated');
+  };
+
   if (loading)
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-100">
-        <div className="text-lg font-semibold text-gray-600 animate-pulse">
-          Loading your profile...
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+          <div className="text-white text-lg font-semibold animate-pulse">
+            Loading your dashboard...
+          </div>
         </div>
       </div>
     );
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-blue-500 to-purple-700 p-6 text-white">
-      <h1 className="text-3xl font-bold mb-6">
-        👋 Welcome back, {user?.name?.split(" ")[0]}!
-      </h1>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50">
+      {/* Header/Navbar */}
+      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            {/* Logo */}
+            <div className="flex items-center space-x-2 sm:space-x-3 flex-shrink-0">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-blue-600 to-blue-800 rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-sm sm:text-lg">SS</span>
+              </div>
+              <h1 className="text-gray-900 text-sm sm:text-xl font-bold truncate">Street Sports INC</h1>
+            </div>
 
-      <ProfileCard user={user} />
+            {/* Notification Badges - Hidden on small screens */}
+            <div className="hidden md:flex items-center space-x-2 lg:space-x-3">
+              <div className="bg-blue-100 border border-blue-200 rounded-lg px-2 lg:px-3 py-1">
+                <span className="text-blue-700 text-xs lg:text-sm font-medium">Cricket 11/17 Won pending</span>
+              </div>
+              <div className="bg-blue-100 border border-blue-200 rounded-lg px-2 lg:px-3 py-1">
+                <span className="text-blue-700 text-xs lg:text-sm font-medium">Football 12/20 Won pending</span>
+              </div>
+            </div>
 
+            {/* Settings Dropdown */}
+            <div className="flex-shrink-0">
+              <SettingsDropdown user={user} onLogout={handleLogout} />
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Notification Bar */}
+      <NotificationBar onRequestUpdate={handleRequestUpdate} />
+
+      {/* Main Content */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 lg:gap-8">
+          {/* My Events Section - Left Column (60%) */}
+          <div className="xl:col-span-2">
+            <MyEventsSection onEventClick={handleEventClick} />
+          </div>
+
+          {/* All Events Section - Right Column (40%) */}
+          <div className="xl:col-span-1">
+            <AllEventsPanel onEventClick={handleEventClick} />
+          </div>
+        </div>
+      </main>
+
+      {/* Floating Action Button */}
       <button
-        onClick={handleLogout}
-        className="mt-6 bg-red-500 hover:bg-red-600 px-6 py-2 rounded-lg text-white transition"
+        onClick={() => setShowCreateModal(true)}
+        className="fixed bottom-4 right-4 sm:bottom-8 sm:right-8 w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 flex items-center justify-center z-30"
       >
-        Logout
+        <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+        </svg>
       </button>
+
+      {/* Create Event Modal */}
+      <CreateEventModal
+        isOpen={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        onEventCreated={handleEventCreated}
+      />
+
+      {/* Event Details Modal (placeholder for future implementation) */}
+      {selectedEvent && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-slate-900 border border-white/20 rounded-xl p-6 w-full max-w-md">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-white text-lg font-semibold">{selectedEvent.eventName}</h3>
+              <button
+                onClick={() => setSelectedEvent(null)}
+                className="text-white/60 hover:text-white transition-colors"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <div className="text-white/80">
+              <p><strong>Sport:</strong> {selectedEvent.sportType}</p>
+              <p><strong>Teams:</strong> {selectedEvent.teams?.length || 0}</p>
+              <p><strong>Matches:</strong> {selectedEvent.matches?.length || 0}</p>
+              <p><strong>Status:</strong> {selectedEvent.status}</p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
