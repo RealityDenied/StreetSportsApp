@@ -138,41 +138,109 @@ const EventPage = () => {
     );
   };
 
-  // Calculate total players in teams
+  // Calculate total players (both in teams and in participants array)
   const getTotalPlayersCount = () => {
-    if (!event?.teams) return 0;
-    return event.teams.reduce((total, team) => total + (team.users?.length || 0), 0);
-  };
-
-  // Get all players in teams
-  const getAllPlayersInTeams = () => {
-    if (!event?.teams) return [];
-    const allPlayers = [];
-    event.teams.forEach(team => {
-      if (team.users) {
-        team.users.forEach(user => {
-          allPlayers.push({ ...user, teamName: team.teamName });
+    if (!event) return 0;
+    
+    // Count players in teams
+    let playersInTeams = 0;
+    if (event.teams) {
+      playersInTeams = event.teams.reduce((total, team) => total + (team.users?.length || 0), 0);
+    }
+    
+    // Count players in participants array (but not already counted in teams)
+    let playersInParticipants = 0;
+    if (event.participants) {
+      // Get all user IDs from teams
+      const teamUserIds = new Set();
+      if (event.teams) {
+        event.teams.forEach(team => {
+          if (team.users) {
+            team.users.forEach(user => {
+              teamUserIds.add(user._id || user);
+            });
+          }
         });
       }
-    });
+      
+      // Count participants not in teams
+      playersInParticipants = event.participants.filter(participantId => 
+        !teamUserIds.has(participantId._id || participantId)
+      ).length;
+    }
+    
+    return playersInTeams + playersInParticipants;
+  };
+
+  // Get all players (both in teams and in participants)
+  const getAllPlayers = () => {
+    if (!event) return [];
+    const allPlayers = [];
+    
+    // Add players from teams
+    if (event.teams) {
+      event.teams.forEach(team => {
+        if (team.users) {
+          team.users.forEach(user => {
+            allPlayers.push({ ...user, teamName: team.teamName, source: 'team' });
+          });
+        }
+      });
+    }
+    
+    // Add players from participants array (but not already in teams)
+    if (event.participants) {
+      const teamUserIds = new Set();
+      if (event.teams) {
+        event.teams.forEach(team => {
+          if (team.users) {
+            team.users.forEach(user => {
+              teamUserIds.add(user._id || user);
+            });
+          }
+        });
+      }
+      
+      event.participants.forEach(participant => {
+        const participantId = participant._id || participant;
+        if (!teamUserIds.has(participantId)) {
+          allPlayers.push({ ...participant, teamName: 'No Team', source: 'participant' });
+        }
+      });
+    }
+    
     return allPlayers;
   };
 
   // Join as audience
   const handleJoinAudience = async () => {
     try {
+      console.log('Attempting to join audience for event:', eventId);
+      console.log('Event data:', {
+        eventName: event?.eventName,
+        audienceFree: event?.audienceFree,
+        audienceFee: event?.audienceFee
+      });
       const response = await api.post(`/events/${eventId}/audience/join`);
       alert('Joined audience successfully!');
       // Refresh event data
       window.location.reload();
     } catch (error) {
       console.error('Error joining audience:', error);
+      console.error('Error details:', {
+        status: error.response?.status,
+        message: error.response?.data?.message,
+        data: error.response?.data
+      });
+      
       if (error.response?.status === 402) {
+        console.log('Payment required, creating checkout session...');
         // Payment required - redirect to Stripe Checkout
         try {
           const checkoutResponse = await api.post(`/events/${eventId}/create-checkout-session`, {
             type: 'audience'
           });
+          console.log('Checkout session created:', checkoutResponse.data);
           if (checkoutResponse.data.success) {
             window.location.href = checkoutResponse.data.url;
           } else {
@@ -180,7 +248,16 @@ const EventPage = () => {
           }
         } catch (checkoutError) {
           console.error('Error creating checkout session:', checkoutError);
-          if (checkoutError.response?.data?.message) {
+          console.error('Checkout error details:', {
+            status: checkoutError.response?.status,
+            message: checkoutError.response?.data?.message,
+            data: checkoutError.response?.data
+          });
+          
+          if (checkoutError.response?.status === 400 && 
+              checkoutError.response?.data?.message?.includes('Minimum payment amount')) {
+            alert(`Payment Error: ${checkoutError.response.data.message}\n\nPlease contact the event organizer to increase the fee to at least ₹40.`);
+          } else if (checkoutError.response?.data?.message) {
             alert(`Payment Error: ${checkoutError.response.data.message}`);
           } else {
             alert('Error processing payment. Please try again.');
@@ -516,17 +593,19 @@ const EventPage = () => {
                     {showPlayersDropdown && (
                       <div className="absolute top-full left-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-10 w-80 max-h-60 overflow-y-auto">
                         <div className="p-3">
-                          <h4 className="font-semibold text-gray-900 mb-2">Players in Teams</h4>
-                          {getAllPlayersInTeams().length === 0 ? (
-                            <p className="text-gray-500 text-sm">No players in teams yet</p>
+                          <h4 className="font-semibold text-gray-900 mb-2">All Players</h4>
+                          {getAllPlayers().length === 0 ? (
+                            <p className="text-gray-500 text-sm">No players registered yet</p>
                           ) : (
                             <div className="space-y-2">
-                              {getAllPlayersInTeams().map((player, index) => (
+                              {getAllPlayers().map((player, index) => (
                                 <div key={player._id || index} className="flex items-center justify-between bg-gray-50 rounded-lg p-2">
                                   <div>
                                     <p className="text-sm font-medium text-gray-900">{player.name}</p>
                                     <p className="text-xs text-gray-600">{player.email}</p>
-                                    <p className="text-xs text-blue-600">{player.teamName}</p>
+                                    <p className={`text-xs ${player.source === 'team' ? 'text-blue-600' : 'text-orange-600'}`}>
+                                      {player.teamName} {player.source === 'team' ? '(In Team)' : '(No Team)'}
+                                    </p>
                                   </div>
                                   {player.favoriteSport && (
                                     <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">

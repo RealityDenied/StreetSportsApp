@@ -27,14 +27,20 @@ const TicketValidator = ({ isOpen, onClose, eventId }) => {
     try {
       // If organizer pasted QR JSON payload, use verify-ticket endpoint
       const trimmed = codeInput.trim();
+      console.log('Validating ticket:', trimmed);
+      
       let response;
       if (trimmed.startsWith('{') && trimmed.endsWith('}')) {
         // Treat as QR JSON payload
+        console.log('Using QR JSON validation');
         response = await api.post(`/events/${eventId}/verify-ticket`, { qrData: trimmed });
       } else {
         // Treat as plain Ticket ID
+        console.log('Using Ticket ID validation');
         response = await api.post(`/events/${eventId}/validate-ticket`, { ticketId: trimmed });
       }
+
+      console.log('Validation response:', response.data);
 
       setResult({
         valid: true,
@@ -123,7 +129,7 @@ const TicketValidator = ({ isOpen, onClose, eventId }) => {
 
             <button
               onClick={validateTicket}
-              disabled={loading || !ticketId.trim()}
+              disabled={loading || !codeInput.trim()}
               className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white px-6 py-3 rounded-lg font-medium transition-colors flex items-center justify-center space-x-2"
             >
               {loading ? (

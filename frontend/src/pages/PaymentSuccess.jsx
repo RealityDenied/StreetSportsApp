@@ -42,13 +42,22 @@ const PaymentSuccess = () => {
       setUser(userResponse.data.user);
 
       // Complete registration after successful payment
-      await api.post(`/events/${eventId}/complete-registration`, {
-        type: type
-      });
+      console.log('Completing registration for:', { eventId, type });
+      try {
+        const registrationResponse = await api.post(`/events/${eventId}/complete-registration`, {
+          type: type
+        });
+        console.log('Registration completed:', registrationResponse.data);
+      } catch (registrationError) {
+        console.error('Registration completion failed:', registrationError);
+        // Don't fail the entire process if registration fails
+        // The payment was successful, so we can still show the ticket
+        console.warn('Payment successful but registration failed. User may need to contact support.');
+      }
       
       // Generate ticket data
       const ticket = {
-        id: `TICKET_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        id: `TICKET_${Date.now()}_${Math.random().toString(36).substr(2, 9)}_${userResponse.data.user._id}`,
         eventId: eventId,
         eventName: eventResponse.data.event.eventName,
         userName: userResponse.data.user.name,

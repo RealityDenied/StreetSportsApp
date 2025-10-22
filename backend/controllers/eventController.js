@@ -845,6 +845,17 @@ const createCheckoutSession = async (req, res) => {
       });
     }
 
+    // Check minimum amount for Stripe (50 cents = ~₹40)
+    const minimumAmount = 40; // ₹40 minimum for Stripe
+    if (amount < minimumAmount) {
+      return res.status(400).json({
+        success: false,
+        message: `Minimum payment amount is ₹${minimumAmount}. Current amount ₹${amount} is too small for payment processing.`,
+        minimumAmount: minimumAmount,
+        currentAmount: amount
+      });
+    }
+
     // Check if Stripe is properly initialized
     if (!stripe) {
       console.error('Stripe not initialized - check STRIPE_SECRET_KEY in .env file');
@@ -855,36 +866,46 @@ const createCheckoutSession = async (req, res) => {
       });
     }
 
-    console.log('Creating Stripe checkout session...');
+    console.log('Stripe is initialized, creating checkout session...');
+    console.log('Amount:', amount, 'Type:', type, 'Event:', event.eventName);
 
     // Create checkout session
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
-      line_items: [
-        {
-          price_data: {
-            currency: 'inr',
-            product_data: {
-              name: `${event.eventName} - ${feeType} Registration`,
-              description: `Registration fee for ${feeType.toLowerCase()} participation`,
+    let session;
+    try {
+      session = await stripe.checkout.sessions.create({
+        payment_method_types: ['card'],
+        line_items: [
+          {
+            price_data: {
+              currency: 'inr',
+              product_data: {
+                name: `${event.eventName} - ${feeType} Registration`,
+                description: `Registration fee for ${feeType.toLowerCase()} participation`,
+              },
+              unit_amount: amount * 100, // Convert to cents
             },
-            unit_amount: amount * 100, // Convert to cents
+            quantity: 1,
           },
-          quantity: 1,
+        ],
+        mode: 'payment',
+        success_url: `${process.env.FRONTEND_URL || 'http://localhost:5173'}/payment/success?session_id={CHECKOUT_SESSION_ID}&eventId=${eventId}&type=${type}`,
+        cancel_url: `${process.env.FRONTEND_URL || 'http://localhost:5173'}/event/${eventId}`,
+        metadata: {
+          eventId: eventId,
+          userId: userId,
+          type: type
         },
-      ],
-      mode: 'payment',
-      success_url: `${process.env.FRONTEND_URL || 'http://localhost:5173'}/payment/success?session_id={CHECKOUT_SESSION_ID}&eventId=${eventId}&type=${type}`,
-      cancel_url: `${process.env.FRONTEND_URL || 'http://localhost:5173'}/event/${eventId}`,
-      metadata: {
-        eventId: eventId,
-        userId: userId,
-        type: type
-      },
-      customer_email: req.user.email,
-    });
-
-    console.log('Checkout session created successfully:', session.id);
+        customer_email: req.user.email,
+      });
+      console.log('Checkout session created successfully:', session.id);
+    } catch (stripeError) {
+      console.error('Stripe checkout session creation failed:', stripeError);
+      return res.status(500).json({
+        success: false,
+        message: 'Failed to create payment session',
+        error: stripeError.message
+      });
+    }
 
     res.json({
       success: true,
@@ -1054,6 +1075,8 @@ const completeRegistrationAfterPayment = async (req, res) => {
     const { type } = req.body; // 'audience' or 'player'
     const userId = req.user.id;
 
+    console.log('Complete registration request:', { eventId, type, userId });
+
     // Check if event exists
     const event = await Event.findById(eventId);
     if (!event) {
@@ -1078,14 +1101,18 @@ const completeRegistrationAfterPayment = async (req, res) => {
         }
       }
     } else if (type === 'player') {
+      console.log('Adding player to event:', { eventId, userId, type });
+      
       // Add to participants
       if (!event.participants.includes(userId)) {
         event.participants.push(userId);
         await event.save();
+        console.log('Added user to participants:', userId);
       }
       
       // Also add to a default team if no teams exist yet
       if (event.teams.length === 0) {
+        console.log('Creating default team for event');
         const defaultTeam = new Team({
           teamName: 'Team 1',
           event: eventId,
@@ -1095,6 +1122,16 @@ const completeRegistrationAfterPayment = async (req, res) => {
         await defaultTeam.save();
         event.teams.push(defaultTeam._id);
         await event.save();
+        console.log('Created default team and added user:', userId);
+      } else {
+        console.log('Event already has teams:', event.teams.length);
+        // If teams exist, add user to the first team
+        const firstTeam = await Team.findById(event.teams[0]);
+        if (firstTeam && !firstTeam.users.includes(userId)) {
+          firstTeam.users.push(userId);
+          await firstTeam.save();
+          console.log('Added user to existing team:', firstTeam.teamName);
+        }
       }
     }
 
@@ -1132,41 +1169,31 @@ const validateTicketById = async (req, res) => {
       });
     }
 
-    // For this implementation, we'll validate based on the ticket ID format
-    // In a real system, you'd store ticket IDs in a database with validation status
+    // Simple ticket ID validation - just check format
     if (!ticketId.startsWith('TICKET_')) {
       return res.status(400).json({
         success: false,
-        message: 'Invalid ticket format'
+        message: 'Invalid ticket format - must start with TICKET_'
       });
     }
 
-    // Extract timestamp and random part from ticket ID
-    const parts = ticketId.split('_');
-    if (parts.length !== 3) {
+    // Extract user ID from ticket data
+    // The ticket ID should contain the user ID or we need to parse it from QR data
+    let userId;
+    
+    // Try to extract user ID from ticket ID format: TICKET_timestamp_random_userId
+    const ticketParts = ticketId.split('_');
+    if (ticketParts.length >= 4) {
+      userId = ticketParts[3]; // Extract user ID from ticket format
+    } else {
+      // If ticket format doesn't contain user ID, we need to ask for it
       return res.status(400).json({
         success: false,
-        message: 'Invalid ticket ID format'
+        message: 'Ticket format invalid - cannot extract user ID. Please provide user ID separately.'
       });
     }
-
-    const timestamp = parseInt(parts[1]);
-    const ticketDate = new Date(timestamp);
     
-    // Check if ticket is not too old (e.g., within 30 days)
-    const thirtyDaysAgo = new Date();
-    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-    
-    if (ticketDate < thirtyDaysAgo) {
-      return res.status(400).json({
-        success: false,
-        message: 'Ticket has expired'
-      });
-    }
-
-    // For demo purposes, we'll simulate finding the user
-    // In a real system, you'd store ticket-user mapping in database
-    const userId = req.user.id; // For now, use current user
+    console.log('Extracted user ID from ticket:', userId);
     const user = await User.findById(userId);
     
     if (!user) {
@@ -1180,37 +1207,69 @@ const validateTicketById = async (req, res) => {
     let isValidTicket = false;
     let ticketType = '';
 
+    console.log('Checking user registration:', { userId, eventId });
+
     // Check if user is in audience
     if (event.audience) {
       const audience = await Audience.findById(event.audience);
+      console.log('Audience check:', { 
+        audienceExists: !!audience, 
+        audienceUsers: audience?.users?.length || 0,
+        userInAudience: audience?.users?.includes(userId) || false
+      });
       if (audience && audience.users.includes(userId)) {
         isValidTicket = true;
         ticketType = 'audience';
+        console.log('User found in audience');
       }
     }
 
     // Check if user is in participants
-    if (!isValidTicket && event.participants.includes(userId)) {
-      isValidTicket = true;
-      ticketType = 'player';
+    if (!isValidTicket) {
+      console.log('Participants check:', { 
+        participantsCount: event.participants?.length || 0,
+        userInParticipants: event.participants?.includes(userId) || false
+      });
+      if (event.participants.includes(userId)) {
+        isValidTicket = true;
+        ticketType = 'player';
+        console.log('User found in participants');
+      }
     }
 
     // Check if user is in any team
     if (!isValidTicket) {
+      console.log('Teams check:', { teamsCount: event.teams?.length || 0 });
       for (const teamId of event.teams) {
         const team = await Team.findById(teamId);
+        console.log('Team check:', { 
+          teamId, 
+          teamName: team?.teamName,
+          teamUsers: team?.users?.length || 0,
+          userInTeam: team?.users?.includes(userId) || false
+        });
         if (team && team.users.includes(userId)) {
           isValidTicket = true;
           ticketType = 'player';
+          console.log('User found in team:', team.teamName);
           break;
         }
       }
     }
 
+    console.log('Final validation result:', { isValidTicket, ticketType });
+
     if (!isValidTicket) {
       return res.status(400).json({
         success: false,
-        message: 'Invalid ticket - user not registered for this event'
+        message: 'Invalid ticket - user not registered for this event',
+        debug: {
+          userId,
+          eventId,
+          hasAudience: !!event.audience,
+          participantsCount: event.participants?.length || 0,
+          teamsCount: event.teams?.length || 0
+        }
       });
     }
 
@@ -1221,7 +1280,7 @@ const validateTicketById = async (req, res) => {
       eventName: event.eventName,
       type: ticketType,
       amount: ticketType === 'audience' ? event.audienceFee : event.playerFee,
-      timestamp: ticketDate.toISOString(),
+      timestamp: new Date().toISOString(),
       validated: true
     };
 
