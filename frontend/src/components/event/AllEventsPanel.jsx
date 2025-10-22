@@ -10,6 +10,8 @@ const AllEventsPanel = ({ onEventClick, sportFilter = 'all' }) => {
   const scrollContainerRef = useRef(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const eventsPerPage = 2;
 
   useEffect(() => {
     fetchAllEvents();
@@ -27,6 +29,17 @@ const AllEventsPanel = ({ onEventClick, sportFilter = 'all' }) => {
                          event.description?.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesSport && matchesSearch;
   });
+
+  // Pagination logic
+  const totalPages = Math.ceil(filteredEvents.length / eventsPerPage);
+  const startIndex = (currentPage - 1) * eventsPerPage;
+  const endIndex = startIndex + eventsPerPage;
+  const paginatedEvents = filteredEvents.slice(startIndex, endIndex);
+
+  // Reset to page 1 when filter or search changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [sportFilter, searchQuery]);
 
   // Listen for WebSocket events
   useEffect(() => {
@@ -117,35 +130,34 @@ const AllEventsPanel = ({ onEventClick, sportFilter = 'all' }) => {
     <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-gray-900 text-xl font-bold">All Events</h2>
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center justify-between">
           <span className="text-gray-600 text-sm">{filteredEvents.length} events</span>
-          {filteredEvents.length > 0 && (
+          {totalPages > 1 && (
             <div className="flex items-center space-x-2">
               <button
-                onClick={scrollLeft}
-                disabled={!canScrollLeft}
-                className={`p-2 rounded-lg transition-all duration-200 ${
-                  canScrollLeft 
-                    ? 'bg-gray-100 hover:bg-gray-200 text-gray-700' 
-                    : 'bg-gray-50 text-gray-300 cursor-not-allowed'
+                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                disabled={currentPage === 1}
+                className={`px-3 py-1 rounded-lg text-sm transition-all duration-200 ${
+                  currentPage === 1 
+                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
+                    : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
                 }`}
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                </svg>
+                Previous
               </button>
+              <span className="text-sm text-gray-600">
+                {currentPage} of {totalPages}
+              </span>
               <button
-                onClick={scrollRight}
-                disabled={!canScrollRight}
-                className={`p-2 rounded-lg transition-all duration-200 ${
-                  canScrollRight 
-                    ? 'bg-gray-100 hover:bg-gray-200 text-gray-700' 
-                    : 'bg-gray-50 text-gray-300 cursor-not-allowed'
+                onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                disabled={currentPage === totalPages}
+                className={`px-3 py-1 rounded-lg text-sm transition-all duration-200 ${
+                  currentPage === totalPages 
+                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
+                    : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
                 }`}
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
+                Next
               </button>
             </div>
           )}
@@ -184,15 +196,16 @@ const AllEventsPanel = ({ onEventClick, sportFilter = 'all' }) => {
             </p>
           </div>
         ) : (
-          filteredEvents.map(event => (
-            <div key={event._id} className="flex-shrink-0">
+          <div className="space-y-4">
+            {paginatedEvents.map(event => (
               <EventCard
+                key={event._id}
                 event={event}
                 onEventClick={onEventClick}
                 compact={true}
               />
-            </div>
-          ))
+            ))}
+          </div>
         )}
       </div>
     </div>

@@ -132,9 +132,15 @@ const getAllEvents = async (req, res) => {
       .populate('teams')
       .populate({
         path: 'matches',
-        populate: {
-          path: 'highlights'
-        }
+        populate: [
+          {
+            path: 'highlights'
+          },
+          {
+            path: 'teams',
+            select: 'teamName'
+          }
+        ]
       })
       .sort({ createdAt: -1 });
 

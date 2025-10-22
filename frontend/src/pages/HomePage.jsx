@@ -6,7 +6,7 @@ import MyEventsSection from "../components/event/MyEventsSection";
 import AllEventsPanel from "../components/event/AllEventsPanel";
 import CreateEventModal from "../components/event/CreateEventModal";
 import Toast from "../components/ui/Toast";
-import SettingsDropdown from "../components/ui/SettingsDropdown";
+import ProfessionalNavbar from "../components/ui/ProfessionalNavbar";
 import { 
   HeroSection, 
   GlobalHighlightsCarousel, 
@@ -106,7 +106,7 @@ export default function HomePage() {
                 eventName: event.eventName,
                 matchDetails: {
                   teams: teamNames,
-                  date: match.scheduledDate
+                  date: match.scheduledDate ? new Date(match.scheduledDate) : null
                 }
               });
             });
@@ -227,6 +227,13 @@ export default function HomePage() {
     setSelectedSport(sportId);
   };
 
+  const handleScrollToSection = (section) => {
+    const element = document.querySelector(`.${section}-section`);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   const handleCreateEvent = () => {
     setShowCreateModal(true);
   };
@@ -254,34 +261,11 @@ export default function HomePage() {
   return (
     <div className="min-h-screen overflow-hidden bg-gradient-to-br from-blue-50 via-white to-gray-50">
       {/* Header/Navbar */}
-      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            {/* Logo */}
-            <div className="flex items-center space-x-2 sm:space-x-3 flex-shrink-0">
-              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-blue-600 to-blue-800 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm sm:text-lg">SS</span>
-              </div>
-              <h1 className="text-gray-900 text-sm sm:text-xl font-bold truncate">Street Sports INC</h1>
-            </div>
-
-            {/* Notification Badges - Hidden on small screens */}
-            <div className="hidden md:flex items-center space-x-2 lg:space-x-3">
-              <div className="bg-blue-100 border border-blue-200 rounded-lg px-2 lg:px-3 py-1">
-                <span className="text-blue-700 text-xs lg:text-sm font-medium">Cricket 11/17 Won pending</span>
-              </div>
-              <div className="bg-blue-100 border border-blue-200 rounded-lg px-2 lg:px-3 py-1">
-                <span className="text-blue-700 text-xs lg:text-sm font-medium">Football 12/20 Won pending</span>
-              </div>
-            </div>
-
-            {/* Settings Dropdown */}
-            <div className="flex-shrink-0">
-              <SettingsDropdown user={user} onLogout={handleLogout} />
-            </div>
-          </div>
-        </div>
-      </header>
+      <ProfessionalNavbar 
+        user={user} 
+        onLogout={handleLogout}
+        onScrollToSection={handleScrollToSection}
+      />
 
       {/* Notification Bar */}
       <NotificationBar onRequestUpdate={handleRequestUpdate} />
@@ -296,10 +280,14 @@ export default function HomePage() {
       <div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 bg-gray-200">
           {/* Global Highlights Carousel */}
-          <GlobalHighlightsCarousel highlights={globalHighlights} />
+          <div className="highlights-section">
+            <GlobalHighlightsCarousel highlights={globalHighlights} />
+          </div>
           
           {/* Statistics Section */}
-          <StatisticsSection events={allEvents} />
+          <div className="statistics-section">
+            <StatisticsSection events={allEvents} />
+          </div>
           
           {/* Sports Categories Filter */}
           <SportsCategories 

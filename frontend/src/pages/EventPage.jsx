@@ -772,7 +772,7 @@ const EventPage = () => {
           <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
             <h3 className="text-lg font-semibold text-gray-900 mb-2">Event Link</h3>
             <div className="flex items-center space-x-2">
-              <code className="flex-1 bg-white border border-gray-200 rounded px-3 py-2 text-sm text-gray-800">
+              <code className="flex-1 bg-white border border-gray-200 rounded px-3 py-2 text-xs sm:text-sm text-gray-800 truncate">
                 {window.location.origin}/event/{event._id}
               </code>
               <button
@@ -780,9 +780,13 @@ const EventPage = () => {
                   navigator.clipboard.writeText(`${window.location.origin}/event/${event._id}`);
                   alert('Event link copied to clipboard!');
                 }}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                className="bg-blue-600 hover:bg-blue-700 text-white p-2 sm:px-4 sm:py-2 rounded-lg transition-colors flex items-center justify-center"
+                title="Copy Event Link"
               >
-                Copy Link
+                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                </svg>
+                <span className="hidden sm:inline ml-2 text-sm font-medium">Copy Link</span>
               </button>
             </div>
           </div>
