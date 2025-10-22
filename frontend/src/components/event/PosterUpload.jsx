@@ -28,9 +28,12 @@ const PosterUpload = ({ event, isOrganizer, onPosterUpdated }) => {
       const formData = new FormData();
       formData.append('poster', file);
 
+      // Get the token manually and add it to headers
+      const token = localStorage.getItem('token');
       const response = await api.post(`/events/${event._id}/poster/upload`, formData, {
         headers: {
-          'Content-Type': 'multipart/form-data'
+          'Content-Type': 'multipart/form-data',
+          'Authorization': `Bearer ${token}`
         }
       });
 

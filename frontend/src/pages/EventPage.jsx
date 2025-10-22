@@ -449,8 +449,12 @@ const EventPage = () => {
                     try {
                       const formData = new FormData();
                       formData.append('poster', file);
+                      const token = localStorage.getItem('token');
                       const response = await api.post(`/events/${event._id}/poster/upload`, formData, {
-                        headers: { 'Content-Type': 'multipart/form-data' }
+                        headers: { 
+                          'Content-Type': 'multipart/form-data',
+                          'Authorization': `Bearer ${token}`
+                        }
                       });
                       handlePosterUpdated(response.data.poster);
                       alert('Poster uploaded successfully!');
