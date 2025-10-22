@@ -27,7 +27,11 @@ const matchSchema = new mongoose.Schema({
   score: {
     type: mongoose.Schema.Types.Mixed,
     default: null
-  }
+  },
+  highlights: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Highlight'
+  }]
 }, { 
   timestamps: true 
 });

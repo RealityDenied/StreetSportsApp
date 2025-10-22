@@ -24,12 +24,12 @@ export default function HomePage() {
     const fetchUser = async () => {
       try {
         const res = await api.get("/user/me");
-        setUser(res.data);
+        setUser(res.data.user);
         
         // Connect to WebSocket
         const token = localStorage.getItem("token");
         if (token) {
-          socketService.connect(token, res.data._id);
+          socketService.connect(token, res.data.user._id);
         }
       } catch (err) {
         console.error(err);

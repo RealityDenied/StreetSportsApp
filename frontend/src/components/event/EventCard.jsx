@@ -107,6 +107,14 @@ const EventCard = ({ event, userRole = null, onEventClick }) => {
             <p className="text-gray-900 text-lg font-semibold">{event.teams?.length || 0}</p>
           </div>
           <div className="text-center">
+            <p className="font-medium text-xs">Participants</p>
+            <p className="text-gray-900 text-lg font-semibold">{event.participants?.length || 0}</p>
+          </div>
+          <div className="text-center">
+            <p className="font-medium text-xs">Audience</p>
+            <p className="text-gray-900 text-lg font-semibold">{event.audience?.users?.length || 0}</p>
+          </div>
+          <div className="text-center">
             <p className="font-medium text-xs">Matches</p>
             <p className="text-gray-900 text-lg font-semibold">{event.matches?.length || 0}</p>
           </div>
@@ -115,9 +123,16 @@ const EventCard = ({ event, userRole = null, onEventClick }) => {
         {/* Footer Section */}
         <div className="pt-3 border-t border-gray-200">
           <div className="flex items-center justify-between">
-            <span className="text-gray-500 text-xs">
-              {formatDate(event.createdAt)}
-            </span>
+            <div className="flex flex-col">
+              <span className="text-gray-500 text-xs">
+                {formatDate(event.createdAt)}
+              </span>
+              {event.duration && (
+                <span className="text-gray-500 text-xs">
+                  {event.duration} day{event.duration > 1 ? 's' : ''}
+                </span>
+              )}
+            </div>
             <div className="flex items-center space-x-1">
               <span className="text-gray-500 text-xs truncate max-w-[60px] sm:max-w-[80px]">
                 {event._id.slice(-6)}

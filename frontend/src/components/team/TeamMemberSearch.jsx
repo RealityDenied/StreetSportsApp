@@ -3,34 +3,50 @@ import api from '../../api/api';
 
 const TeamMemberSearch = ({ eventId, teamId, onUserSelect, onClose }) => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [users, setUsers] = useState([]);
+  const [filteredUsers, setFilteredUsers] = useState([]);
+  const [allUsers, setAllUsers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selectedUsers, setSelectedUsers] = useState([]);
 
   useEffect(() => {
-    if (searchQuery.length > 2) {
-      searchUsers();
-    } else {
-      setUsers([]);
-    }
-  }, [searchQuery]);
+    // Load all users when component mounts
+    loadAllUsers();
+  }, []);
 
-  const searchUsers = async () => {
+  useEffect(() => {
+    if (searchQuery.length > 0) {
+      filterUsers();
+    } else {
+      setFilteredUsers([]);
+    }
+  }, [searchQuery, allUsers]);
+
+  const loadAllUsers = async () => {
     setLoading(true);
     try {
       const response = await api.get('/requests/search-users', {
         params: {
-          query: searchQuery,
+          query: '', // Empty query to get all users
           eventId,
           teamId
         }
       });
-      setUsers(response.data.users);
+      setAllUsers(response.data.users);
     } catch (error) {
-      console.error('Error searching users:', error);
+      console.error('Error loading users:', error);
     } finally {
       setLoading(false);
     }
+  };
+
+  const filterUsers = () => {
+    const filtered = allUsers.filter(user => 
+      user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.city.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.favoriteSport.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    setFilteredUsers(filtered);
   };
 
   const handleUserSelect = (user) => {
@@ -112,29 +128,71 @@ const TeamMemberSearch = ({ eventId, teamId, onUserSelect, onClose }) => {
             <div className="text-center py-4">
               <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white mx-auto"></div>
             </div>
-          ) : users.length === 0 && searchQuery.length > 2 ? (
-            <div className="text-center py-4">
-              <p className="text-white/60">No users found</p>
-            </div>
           ) : (
-            users.map(user => (
-              <div
-                key={user._id}
-                onClick={() => handleUserSelect(user)}
-                className="flex items-center justify-between bg-white/5 hover:bg-white/10 rounded-lg p-3 cursor-pointer transition-colors"
-              >
-                <div>
-                  <p className="text-white font-medium">{user.name}</p>
-                  <p className="text-white/60 text-sm">{user.email}</p>
-                  <p className="text-white/40 text-xs">{user.city} • {user.favoriteSport}</p>
+            <>
+              {/* Filtered Results Section */}
+              {searchQuery.length > 0 && filteredUsers.length > 0 && (
+                <div className="mb-4">
+                  <h4 className="text-white/80 text-sm font-medium mb-2">
+                    Search Results ({filteredUsers.length})
+                  </h4>
+                  <div className="space-y-2">
+                    {filteredUsers.map(user => (
+                      <div
+                        key={user._id}
+                        onClick={() => handleUserSelect(user)}
+                        className="flex items-center justify-between bg-white/5 hover:bg-white/10 rounded-lg p-3 cursor-pointer transition-colors"
+                      >
+                        <div>
+                          <p className="text-white font-medium">{user.name}</p>
+                          <p className="text-white/60 text-sm">{user.email}</p>
+                          <p className="text-white/40 text-xs">{user.city} • {user.favoriteSport}</p>
+                        </div>
+                        <button className="text-blue-400 hover:text-blue-300">
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                          </svg>
+                        </button>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-                <button className="text-blue-400 hover:text-blue-300">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                  </svg>
-                </button>
+              )}
+
+              {/* All Available Players Section */}
+              <div>
+                <h4 className="text-white/80 text-sm font-medium mb-2">
+                  All Available Players ({allUsers.length})
+                </h4>
+                <div className="space-y-2 max-h-40 overflow-y-auto">
+                  {allUsers.map(user => (
+                    <div
+                      key={user._id}
+                      onClick={() => handleUserSelect(user)}
+                      className="flex items-center justify-between bg-white/5 hover:bg-white/10 rounded-lg p-3 cursor-pointer transition-colors"
+                    >
+                      <div>
+                        <p className="text-white font-medium">{user.name}</p>
+                        <p className="text-white/60 text-sm">{user.email}</p>
+                        <p className="text-white/40 text-xs">{user.city} • {user.favoriteSport}</p>
+                      </div>
+                      <button className="text-blue-400 hover:text-blue-300">
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                        </svg>
+                      </button>
+                    </div>
+                  ))}
+                </div>
               </div>
-            ))
+
+              {/* No Results Message */}
+              {searchQuery.length > 0 && filteredUsers.length === 0 && (
+                <div className="text-center py-4">
+                  <p className="text-white/60">No users found matching "{searchQuery}"</p>
+                </div>
+              )}
+            </>
           )}
         </div>
 

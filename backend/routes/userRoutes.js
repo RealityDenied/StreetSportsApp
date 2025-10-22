@@ -5,6 +5,7 @@ const { getMe, updateProfile } = require("../controllers/userController");
 const router = express.Router();
 
 router.get("/me", verifyToken, getMe);
+router.get("/profile", verifyToken, getMe); // Alias for /me
 router.put("/update-profile", verifyToken, updateProfile);
 
 module.exports = router;

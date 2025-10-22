@@ -44,7 +44,38 @@ const eventSchema = new mongoose.Schema({
     type: String,
     enum: ['active', 'completed', 'cancelled'],
     default: 'active'
-  }
+  },
+  duration: {
+    type: Number,
+    required: true,
+    min: 1
+  },
+  audienceFree: {
+    type: Boolean,
+    default: true
+  },
+  playerFree: {
+    type: Boolean,
+    default: true
+  },
+  audienceFee: {
+    type: Number,
+    default: 0,
+    min: 0
+  },
+  playerFee: {
+    type: Number,
+    default: 0,
+    min: 0
+  },
+  audience: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Audience'
+  },
+  participants: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  }]
 }, { 
   timestamps: true 
 });

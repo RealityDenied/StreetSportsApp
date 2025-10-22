@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import api from '../../api/api';
 import Toast from '../ui/Toast';
+import HighlightCard from './HighlightCard';
+import HighlightUploadModal from './HighlightUploadModal';
 
 const MatchManagement = ({ event, isOrganizer, onMatchCreated }) => {
   const [matches, setMatches] = useState([]);
@@ -163,6 +165,9 @@ const MatchCard = ({ match, teams, isOrganizer, eventId }) => {
   const [score, setScore] = useState('');
   const [updating, setUpdating] = useState(false);
   const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
+  const [highlights, setHighlights] = useState(match.highlights || []);
+  const [showHighlightModal, setShowHighlightModal] = useState(false);
+  const [showHighlights, setShowHighlights] = useState(false);
 
   const showToast = (message, type = 'success') => {
     setToast({ show: true, message, type });
@@ -198,6 +203,14 @@ const MatchCard = ({ match, teams, isOrganizer, eventId }) => {
     } finally {
       setUpdating(false);
     }
+  };
+
+  const handleHighlightCreated = (highlight) => {
+    setHighlights(prev => [...prev, highlight]);
+  };
+
+  const handleHighlightDeleted = (highlightId) => {
+    setHighlights(prev => prev.filter(h => h._id !== highlightId));
   };
 
   return (
@@ -289,6 +302,46 @@ const MatchCard = ({ match, teams, isOrganizer, eventId }) => {
           )}
         </div>
       )}
+
+      {/* Highlights Section */}
+      <div className="mt-4 pt-4 border-t border-gray-200">
+        <div className="flex items-center justify-between mb-3">
+          <h5 className="font-medium text-gray-900">
+            Highlights ({highlights.length})
+          </h5>
+          {isOrganizer && (
+            <button
+              onClick={() => setShowHighlightModal(true)}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm font-medium transition-colors flex items-center space-x-1"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+              </svg>
+              <span>Add Highlight</span>
+            </button>
+          )}
+        </div>
+
+        {highlights.length > 0 && (
+          <div className="flex space-x-4 overflow-x-auto pb-2">
+            {highlights.map((highlight) => (
+              <div key={highlight._id} className="flex-shrink-0 w-64">
+                <HighlightCard
+                  highlight={highlight}
+                  isOrganizer={isOrganizer}
+                  onDelete={handleHighlightDeleted}
+                />
+              </div>
+            ))}
+          </div>
+        )}
+
+        {highlights.length === 0 && (
+          <p className="text-gray-500 text-sm text-center py-4">
+            No highlights added yet
+          </p>
+        )}
+      </div>
       
       {toast.show && (
         <Toast
@@ -297,6 +350,15 @@ const MatchCard = ({ match, teams, isOrganizer, eventId }) => {
           onClose={() => setToast({ show: false, message: '', type: 'success' })}
         />
       )}
+
+      {/* Highlight Upload Modal */}
+      <HighlightUploadModal
+        isOpen={showHighlightModal}
+        onClose={() => setShowHighlightModal(false)}
+        matchId={match._id}
+        eventId={eventId}
+        onHighlightCreated={handleHighlightCreated}
+      />
     </div>
   );
 };

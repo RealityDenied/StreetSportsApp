@@ -3,6 +3,7 @@ import HomePage from './pages/HomePage'
 import AuthPage from './pages/AuthPage'
 import OnboardingPage from './pages/OnboardingPage'
 import EventPage from './pages/EventPage'
+import PaymentSuccess from './pages/PaymentSuccess'
 
 export default function App() {
   console.log('App component rendering')
@@ -16,6 +17,7 @@ export default function App() {
           <Route path="/onboarding" element={<OnboardingPage />} />
           <Route path="/home" element={<HomePage />} />
           <Route path="/event/:eventId" element={<EventPage />} />
+          <Route path="/payment/success" element={<PaymentSuccess />} />
         </Routes>
       </div>
     </BrowserRouter>

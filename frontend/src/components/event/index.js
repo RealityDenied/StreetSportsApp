@@ -1,7 +1,13 @@
 export { default as AllEventsPanel } from './AllEventsPanel';
+export { default as AudienceManagement } from './AudienceManagement';
 export { default as CreateEventModal } from './CreateEventModal';
 export { default as EventCard } from './EventCard';
+export { default as HighlightCard } from './HighlightCard';
+export { default as HighlightUploadModal } from './HighlightUploadModal';
 export { default as MatchManagement } from './MatchManagement';
 export { default as MyEventsSection } from './MyEventsSection';
+export { default as PendingPlayersModal } from './PendingPlayersModal';
 export { default as PosterUpload } from './PosterUpload';
 export { default as QuickCreateModal } from './QuickCreateModal';
+export { default as QRScanner } from './QRScanner';
+export { default as TicketValidator } from './TicketValidator';
