@@ -47,9 +47,7 @@ const HighlightUploadModal = ({ isOpen, onClose, matchId, eventId, onHighlightCr
       submitData.append('mediaType', formData.mediaType);
       submitData.append('media', file);
 
-      const response = await api.post(`/events/${eventId}/matches/${matchId}/highlights`, submitData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
+      const response = await api.post(`/events/${eventId}/matches/${matchId}/highlights`, submitData);
 
       onHighlightCreated(response.data.highlight);
       onClose();
