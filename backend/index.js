@@ -4,6 +4,8 @@ const dotenv = require('dotenv');
 const cors = require('cors');
 const http = require('http');
 const { Server } = require('socket.io');
+const fs = require('fs');
+const path = require('path');
 const connectDB = require('./config/db');
 
 dotenv.config();
@@ -21,6 +23,13 @@ const io = new Server(server, {
 });
 
 connectDB();
+
+// Ensure uploads directory exists
+const uploadsDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+  console.log('Created uploads directory');
+}
 
 app.use(cors());
 app.use(express.json());
