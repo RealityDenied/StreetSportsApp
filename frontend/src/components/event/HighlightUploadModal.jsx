@@ -47,7 +47,14 @@ const HighlightUploadModal = ({ isOpen, onClose, matchId, eventId, onHighlightCr
       submitData.append('mediaType', formData.mediaType);
       submitData.append('media', file);
 
-      const response = await api.post(`/events/${eventId}/matches/${matchId}/highlights`, submitData);
+      // Get the token manually and add it to headers
+      const token = localStorage.getItem('token');
+      const response = await api.post(`/events/${eventId}/matches/${matchId}/highlights`, submitData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'Authorization': `Bearer ${token}`
+        }
+      });
 
       onHighlightCreated(response.data.highlight);
       onClose();

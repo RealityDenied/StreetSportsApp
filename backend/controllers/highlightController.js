@@ -7,30 +7,45 @@ const fs = require('fs');
 // Create highlight (organizer only)
 const createHighlight = async (req, res) => {
   try {
+    console.log('=== HIGHLIGHT CREATION DEBUG ===');
+    console.log('Request params:', req.params);
+    console.log('Request body:', req.body);
+    console.log('Request file:', req.file);
+    console.log('User ID:', req.user?.id);
+    
     const { eventId, matchId } = req.params;
     const { title, description, mediaType } = req.body;
     const organizerId = req.user.id;
 
+    console.log('Extracted values:', { eventId, matchId, title, description, mediaType, organizerId });
+
     // Check if user is organizer
     const event = await Event.findById(eventId);
+    console.log('Event found:', event ? 'Yes' : 'No');
     if (!event || event.organiser.toString() !== organizerId) {
+      console.log('User is not organizer');
       return res.status(403).json({ success: false, message: 'Only organizer can create highlights' });
     }
 
     // Check if match exists and belongs to event
     const match = await Match.findById(matchId);
+    console.log('Match found:', match ? 'Yes' : 'No');
     if (!match || match.event.toString() !== eventId) {
+      console.log('Match not found in event');
       return res.status(404).json({ success: false, message: 'Match not found in this event' });
     }
 
     if (!req.file) {
+      console.log('No file provided');
       return res.status(400).json({ success: false, message: 'No media file provided' });
     }
 
+    console.log('Starting Cloudinary upload...');
     // Upload to Cloudinary
     const result = await cloudinary.uploader.upload(req.file.path, {
       folder: 'street-sports/highlights'
     });
+    console.log('Cloudinary upload successful:', result.public_id);
 
     // Create highlight
     const highlight = new Highlight({
@@ -45,19 +60,24 @@ const createHighlight = async (req, res) => {
       createdBy: organizerId
     });
 
+    console.log('Saving highlight...');
     await highlight.save();
+    console.log('Highlight saved with ID:', highlight._id);
 
     // Add highlight to match
     match.highlights.push(highlight._id);
     await match.save();
+    console.log('Match updated with highlight');
 
     // Clean up temporary file
     try {
       fs.unlinkSync(req.file.path);
+      console.log('Temporary file cleaned up');
     } catch (cleanupError) {
       console.warn('Could not delete temporary file:', cleanupError);
     }
 
+    console.log('Highlight creation successful');
     res.status(201).json({
       success: true,
       highlight: await Highlight.findById(highlight._id).populate('createdBy', 'name email')
