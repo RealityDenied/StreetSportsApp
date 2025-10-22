@@ -8,13 +8,7 @@ const matchSchema = new mongoose.Schema({
   },
   teams: [{ 
     type: mongoose.Schema.Types.ObjectId, 
-    ref: 'Team',
-    validate: {
-      validator: function(teams) {
-        return teams.length === 2;
-      },
-      message: 'Match must have exactly 2 teams'
-    }
+    ref: 'Team'
   }],
   won: { 
     type: mongoose.Schema.Types.ObjectId, 
@@ -31,16 +25,19 @@ const matchSchema = new mongoose.Schema({
     default: Date.now
   },
   score: {
-    team1: { type: Number, default: 0 },
-    team2: { type: Number, default: 0 }
+    type: mongoose.Schema.Types.Mixed,
+    default: null
   }
 }, { 
   timestamps: true 
 });
 
-// Ensure teams are different
+// Validate teams array
 matchSchema.pre('save', function(next) {
-  if (this.teams.length === 2 && this.teams[0].toString() === this.teams[1].toString()) {
+  if (this.teams.length !== 2) {
+    return next(new Error('Match must have exactly 2 teams'));
+  }
+  if (this.teams[0].toString() === this.teams[1].toString()) {
     return next(new Error('Teams must be different'));
   }
   next();

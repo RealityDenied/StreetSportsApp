@@ -137,10 +137,17 @@ const searchUsers = async (req, res) => {
     });
     const invitedUserIds = pendingRequests.map(req => req.receiver.toString());
 
-    // Search users excluding team members and already invited users
+    // Get users already in other teams for this event
+    const otherTeams = await Team.find({ 
+      event: eventId, 
+      _id: { $ne: teamId } 
+    });
+    const otherTeamUserIds = otherTeams.flatMap(team => team.users.map(id => id.toString()));
+
+    // Search users excluding team members, already invited users, and users in other teams
     const searchQuery = {
       _id: { 
-        $nin: [...teamUserIds, ...invitedUserIds, userId] 
+        $nin: [...teamUserIds, ...invitedUserIds, ...otherTeamUserIds, userId] 
       }
     };
 

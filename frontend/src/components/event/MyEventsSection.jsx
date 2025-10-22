@@ -47,8 +47,27 @@ const MyEventsSection = ({ onEventClick }) => {
 
   const fetchMyEvents = async () => {
     try {
-      const response = await api.get('/events/my-events');
-      setEvents(response.data.events);
+      // Fetch events where user is organizer
+      const organizerResponse = await api.get('/events/my-events');
+      const organizerEvents = organizerResponse.data.events || [];
+      
+      // Fetch events where user is a team member
+      const memberResponse = await api.get('/events/my-participations');
+      const memberEvents = memberResponse.data.events || [];
+      
+      // Combine and deduplicate events
+      const allEvents = [...organizerEvents.map(event => ({ ...event, userRole: 'organizer' }))];
+      memberEvents.forEach(event => {
+        if (!allEvents.find(e => e._id === event._id)) {
+          allEvents.push({ ...event, userRole: 'member' });
+        } else {
+          // Update existing event to show user is both organizer and member
+          const existingIndex = allEvents.findIndex(e => e._id === event._id);
+          allEvents[existingIndex] = { ...allEvents[existingIndex], userRole: 'organizer-member' };
+        }
+      });
+      
+      setEvents(allEvents);
     } catch (error) {
       console.error('Error fetching my events:', error);
     } finally {
@@ -92,7 +111,7 @@ const MyEventsSection = ({ onEventClick }) => {
   return (
     <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-gray-900 text-xl font-bold">My Events</h2>
+        <h2 className="text-gray-900 text-xl font-bold">My Events & Participations</h2>
         <div className="flex items-center space-x-3">
           <span className="text-gray-600 text-sm">{events.length} events</span>
           {events.length > 0 && (
@@ -123,8 +142,8 @@ const MyEventsSection = ({ onEventClick }) => {
       {events.length === 0 ? (
         <div className="text-center py-12">
           <div className="text-6xl mb-4">🏆</div>
-          <p className="text-gray-600 text-lg mb-2">No events created yet</p>
-          <p className="text-gray-500 text-sm">Create your first event to get started!</p>
+          <p className="text-gray-600 text-lg mb-2">No events yet</p>
+          <p className="text-gray-500 text-sm">Create events or join teams to see them here!</p>
         </div>
       ) : (
         <div className="relative">
@@ -137,7 +156,7 @@ const MyEventsSection = ({ onEventClick }) => {
               <div key={event._id} className="flex-shrink-0 w-72">
                 <EventCard
                   event={event}
-                  isOrganizer={true}
+                  userRole={event.userRole}
                   onEventClick={onEventClick}
                 />
               </div>

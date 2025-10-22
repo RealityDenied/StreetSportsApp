@@ -1,11 +1,18 @@
 import { useState, useEffect } from 'react';
 import api from '../../api/api';
+import Toast from '../ui/Toast';
 
 const MatchManagement = ({ event, isOrganizer, onMatchCreated }) => {
   const [matches, setMatches] = useState([]);
   const [showCreateMatch, setShowCreateMatch] = useState(false);
   const [selectedTeams, setSelectedTeams] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
+
+  const showToast = (message, type = 'success') => {
+    setToast({ show: true, message, type });
+    setTimeout(() => setToast({ show: false, message: '', type: 'success' }), 3000);
+  };
 
   useEffect(() => {
     if (event && event.matches) {
@@ -16,7 +23,7 @@ const MatchManagement = ({ event, isOrganizer, onMatchCreated }) => {
   const handleCreateMatch = async (e) => {
     e.preventDefault();
     if (selectedTeams.length !== 2) {
-      alert('Please select exactly 2 teams');
+      showToast('Please select exactly 2 teams', 'error');
       return;
     }
 
@@ -30,9 +37,10 @@ const MatchManagement = ({ event, isOrganizer, onMatchCreated }) => {
       setSelectedTeams([]);
       setShowCreateMatch(false);
       onMatchCreated && onMatchCreated(response.data.match);
+      showToast('Match created successfully!');
     } catch (error) {
       console.error('Error creating match:', error);
-      alert('Error creating match. Please try again.');
+      showToast('Error creating match. Please try again.', 'error');
     } finally {
       setLoading(false);
     }
@@ -44,7 +52,7 @@ const MatchManagement = ({ event, isOrganizer, onMatchCreated }) => {
     } else if (selectedTeams.length < 2) {
       setSelectedTeams(prev => [...prev, teamId]);
     } else {
-      alert('You can only select 2 teams for a match');
+      showToast('You can only select 2 teams for a match', 'error');
     }
   };
 
@@ -137,6 +145,14 @@ const MatchManagement = ({ event, isOrganizer, onMatchCreated }) => {
           ))}
         </div>
       )}
+      
+      {toast.show && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast({ show: false, message: '', type: 'success' })}
+        />
+      )}
     </div>
   );
 };
@@ -146,6 +162,12 @@ const MatchCard = ({ match, teams, isOrganizer, eventId }) => {
   const [winningTeam, setWinningTeam] = useState('');
   const [score, setScore] = useState('');
   const [updating, setUpdating] = useState(false);
+  const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
+
+  const showToast = (message, type = 'success') => {
+    setToast({ show: true, message, type });
+    setTimeout(() => setToast({ show: false, message: '', type: 'success' }), 3000);
+  };
 
   const getTeamName = (teamId) => {
     const team = teams?.find(t => t._id === teamId);
@@ -155,7 +177,7 @@ const MatchCard = ({ match, teams, isOrganizer, eventId }) => {
   const handleUpdateResult = async (e) => {
     e.preventDefault();
     if (!winningTeam) {
-      alert('Please select a winning team');
+      showToast('Please select a winning team', 'error');
       return;
     }
 
@@ -169,10 +191,10 @@ const MatchCard = ({ match, teams, isOrganizer, eventId }) => {
       setShowUpdateResult(false);
       setWinningTeam('');
       setScore('');
-      alert('Match result updated successfully!');
+      showToast('Match result updated successfully!');
     } catch (error) {
       console.error('Error updating match result:', error);
-      alert('Error updating match result. Please try again.');
+      showToast('Error updating match result. Please try again.', 'error');
     } finally {
       setUpdating(false);
     }
@@ -266,6 +288,14 @@ const MatchCard = ({ match, teams, isOrganizer, eventId }) => {
             </form>
           )}
         </div>
+      )}
+      
+      {toast.show && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast({ show: false, message: '', type: 'success' })}
+        />
       )}
     </div>
   );

@@ -5,6 +5,7 @@ import NotificationBar from "../components/ui/NotificationBar";
 import MyEventsSection from "../components/event/MyEventsSection";
 import AllEventsPanel from "../components/event/AllEventsPanel";
 import CreateEventModal from "../components/event/CreateEventModal";
+import Toast from "../components/ui/Toast";
 import SettingsDropdown from "../components/ui/SettingsDropdown";
 
 export default function HomePage() {
@@ -12,6 +13,12 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
+  const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
+
+  const showToast = (message, type = 'success') => {
+    setToast({ show: true, message, type });
+    setTimeout(() => setToast({ show: false, message: '', type: 'success' }), 3000);
+  };
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -26,7 +33,7 @@ export default function HomePage() {
         }
       } catch (err) {
         console.error(err);
-        alert("Session expired, please login again");
+        showToast("Session expired, please login again", "error");
         localStorage.removeItem("token");
         window.location.href = "/auth";
       } finally {
@@ -227,6 +234,14 @@ export default function HomePage() {
             </div>
           </div>
         </div>
+      )}
+      
+      {toast.show && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast({ show: false, message: '', type: 'success' })}
+        />
       )}
     </div>
   );

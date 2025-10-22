@@ -4,10 +4,13 @@ const { verifyToken } = require('../middlewares/authMiddleware');
 const {
   createEvent,
   getMyEvents,
+  getMyParticipations,
   getAllEvents,
   getEvent,
   createTeam,
   inviteToTeam,
+  removeTeamMember,
+  promoteToCaptain,
   createMatch,
   updateMatchResult,
   uploadPoster,
@@ -47,6 +50,7 @@ router.use(verifyToken);
 // Event routes
 router.post('/create', createEvent);
 router.get('/my-events', getMyEvents);
+router.get('/my-participations', getMyParticipations);
 router.get('/all', getAllEvents);
 router.get('/:eventId', getEvent);
 
@@ -60,6 +64,8 @@ router.get('/test-cloudinary', testCloudinary);
 // Team routes
 router.post('/:eventId/teams/create', createTeam);
 router.post('/:eventId/teams/:teamId/invite', inviteToTeam);
+router.delete('/:eventId/teams/:teamId/members/:userId', removeTeamMember);
+router.put('/:eventId/teams/:teamId/members/:userId/promote', promoteToCaptain);
 
 // Match routes
 router.post('/:eventId/matches/create', createMatch);

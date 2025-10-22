@@ -2,7 +2,7 @@ import { useState } from 'react';
 import api from '../../api/api';
 import Toast from '../ui/Toast';
 
-const EventCard = ({ event, isOrganizer = false, onEventClick }) => {
+const EventCard = ({ event, userRole = null, onEventClick }) => {
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
 
@@ -53,6 +53,35 @@ const EventCard = ({ event, isOrganizer = false, onEventClick }) => {
     window.open(`/event/${event._id}`, '_blank');
   };
 
+  const getRoleIndicator = () => {
+    if (!userRole) return null;
+    
+    const roleConfig = {
+      'organizer': {
+        color: 'bg-yellow-400',
+        tooltip: 'Organizer'
+      },
+      'member': {
+        color: 'bg-blue-400',
+        tooltip: 'Player'
+      },
+      'organizer-member': {
+        color: 'bg-yellow-400',
+        tooltip: 'Organizer & Player'
+      }
+    };
+
+    const config = roleConfig[userRole];
+    if (!config) return null;
+
+    return (
+      <div 
+        className={`w-3 h-3 rounded-full ${config.color} border border-white shadow-sm`}
+        title={config.tooltip}
+      />
+    );
+  };
+
   return (
     <>
       <div 
@@ -68,6 +97,7 @@ const EventCard = ({ event, isOrganizer = false, onEventClick }) => {
               <p className="text-gray-600 text-xs sm:text-sm">{event.sportType}</p>
             </div>
           </div>
+          {getRoleIndicator()}
         </div>
 
         {/* Stats Section */}

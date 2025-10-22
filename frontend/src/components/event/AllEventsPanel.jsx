@@ -104,6 +104,7 @@ const AllEventsPanel = ({ onEventClick }) => {
             <EventCard
               key={event._id}
               event={event}
+              userRole={null}
               onEventClick={onEventClick}
             />
           ))

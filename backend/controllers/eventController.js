@@ -43,7 +43,32 @@ const createEvent = async (req, res) => {
   }
 };
 
-// Get user's events
+// Get events where user is a participant (team member)
+const getMyParticipations = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    
+    // Find teams where user is a member
+    const teams = await Team.find({ users: userId }).populate('event');
+    
+    // Extract unique events from teams
+    const eventIds = [...new Set(teams.map(team => team.event._id.toString()))];
+    
+    // Fetch events with full details
+    const events = await Event.find({ _id: { $in: eventIds } })
+      .populate('organiser', 'name email')
+      .populate('teams')
+      .populate('matches')
+      .sort({ createdAt: -1 });
+
+    res.json({ success: true, events });
+  } catch (error) {
+    console.error('Get my participations error:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// Get user's events (where user is organizer)
 const getMyEvents = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -164,6 +189,27 @@ const inviteToTeam = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Team not found in this event' });
     }
 
+    // Check if user is already in another team for this event
+    const existingTeam = await Team.findOne({ 
+      event: eventId, 
+      users: receiverId 
+    });
+    
+    if (existingTeam) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'User is already a member of another team in this event' 
+      });
+    }
+
+    // Check if user is already in this team
+    if (team.users.includes(receiverId)) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'User is already a member of this team' 
+      });
+    }
+
     // Create team request
     const teamRequest = new TeamRequest({
       team: teamId,
@@ -187,6 +233,94 @@ const inviteToTeam = async (req, res) => {
     res.status(201).json({ success: true, request: teamRequest });
   } catch (error) {
     console.error('Invite to team error:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// Remove team member (organizer only)
+const removeTeamMember = async (req, res) => {
+  try {
+    const { eventId, teamId, userId } = req.params;
+    const organizerId = req.user.id;
+
+    // Check if user is organizer
+    const event = await Event.findById(eventId);
+    if (!event || event.organiser.toString() !== organizerId) {
+      return res.status(403).json({ success: false, message: 'Only organizer can remove team members' });
+    }
+
+    // Check if team exists in event
+    const team = await Team.findById(teamId);
+    if (!team || team.event.toString() !== eventId) {
+      return res.status(404).json({ success: false, message: 'Team not found in this event' });
+    }
+
+    // Check if user is in the team
+    if (!team.users.includes(userId)) {
+      return res.status(400).json({ success: false, message: 'User is not a member of this team' });
+    }
+
+    // Remove user from team
+    team.users = team.users.filter(id => id.toString() !== userId);
+    
+    // If user was captain, remove captain status
+    if (team.captain && team.captain.toString() === userId) {
+      team.captain = null;
+    }
+
+    await team.save();
+
+    // Emit team update
+    const io = req.app.get('io');
+    io.emit('teamUpdated', {
+      eventId,
+      team: await Team.findById(team._id).populate('users', 'name email')
+    });
+
+    res.json({ success: true, message: 'Member removed successfully' });
+  } catch (error) {
+    console.error('Remove team member error:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// Promote team member to captain (organizer only)
+const promoteToCaptain = async (req, res) => {
+  try {
+    const { eventId, teamId, userId } = req.params;
+    const organizerId = req.user.id;
+
+    // Check if user is organizer
+    const event = await Event.findById(eventId);
+    if (!event || event.organiser.toString() !== organizerId) {
+      return res.status(403).json({ success: false, message: 'Only organizer can promote team members' });
+    }
+
+    // Check if team exists in event
+    const team = await Team.findById(teamId);
+    if (!team || team.event.toString() !== eventId) {
+      return res.status(404).json({ success: false, message: 'Team not found in this event' });
+    }
+
+    // Check if user is in the team
+    if (!team.users.includes(userId)) {
+      return res.status(400).json({ success: false, message: 'User is not a member of this team' });
+    }
+
+    // Set user as captain
+    team.captain = userId;
+    await team.save();
+
+    // Emit team update
+    const io = req.app.get('io');
+    io.emit('teamUpdated', {
+      eventId,
+      team: await Team.findById(team._id).populate('users', 'name email')
+    });
+
+    res.json({ success: true, message: 'Member promoted to captain successfully' });
+  } catch (error) {
+    console.error('Promote to captain error:', error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
@@ -270,8 +404,10 @@ const updateMatchResult = async (req, res) => {
     // Update match
     match.won = wonTeamId;
     match.status = 'completed';
-    if (score) {
-      match.score = score;
+    if (score && score.trim() !== '') {
+      match.score = score.trim();
+    } else {
+      match.score = null;
     }
     await match.save();
 
@@ -420,10 +556,13 @@ const testCloudinary = async (req, res) => {
 module.exports = {
   createEvent,
   getMyEvents,
+  getMyParticipations,
   getAllEvents,
   getEvent,
   createTeam,
   inviteToTeam,
+  removeTeamMember,
+  promoteToCaptain,
   createMatch,
   updateMatchResult,
   uploadPoster,
