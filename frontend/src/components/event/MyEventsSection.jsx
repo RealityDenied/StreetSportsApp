@@ -3,14 +3,27 @@ import api from '../../api/api';
 import EventCard from './EventCard';
 import socketService from '../../services/socket';
 
-const MyEventsSection = ({ onEventClick }) => {
+const MyEventsSection = ({ onEventClick, sportFilter = 'all' }) => {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const scrollContainerRef = useRef(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
 
   useEffect(() => {
     fetchMyEvents();
   }, []);
+
+  // Check scrollability when events change
+  useEffect(() => {
+    checkScrollability();
+  }, [events]);
+
+  // Filter events based on sport filter
+  const filteredEvents = events.filter(event => {
+    if (sportFilter === 'all') return true;
+    return event.sportType?.toLowerCase() === sportFilter.toLowerCase();
+  });
 
   // Listen for WebSocket events
   useEffect(() => {
@@ -75,23 +88,32 @@ const MyEventsSection = ({ onEventClick }) => {
     }
   };
 
-  const scrollRight = () => {
+  const checkScrollability = () => {
     if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollBy({
-        left: 300, // Scroll by card width + gap
-        behavior: 'smooth'
-      });
+      const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
+      setCanScrollLeft(scrollLeft > 0);
+      setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 1);
     }
   };
 
   const scrollLeft = () => {
     if (scrollContainerRef.current) {
       scrollContainerRef.current.scrollBy({
-        left: -300, // Scroll by card width + gap
+        left: -300,
         behavior: 'smooth'
       });
     }
   };
+
+  const scrollRight = () => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollBy({
+        left: 300,
+        behavior: 'smooth'
+      });
+    }
+  };
+
 
   if (loading) {
     return (
@@ -113,24 +135,32 @@ const MyEventsSection = ({ onEventClick }) => {
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-gray-900 text-xl font-bold">My Events & Participations</h2>
         <div className="flex items-center space-x-3">
-          <span className="text-gray-600 text-sm">{events.length} events</span>
-          {events.length > 0 && (
+          <span className="text-gray-600 text-sm">{filteredEvents.length} events</span>
+          {filteredEvents.length > 0 && (
             <div className="flex items-center space-x-2">
               <button
                 onClick={scrollLeft}
-                className="p-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
-                title="Scroll left"
+                disabled={!canScrollLeft}
+                className={`p-2 rounded-lg transition-all duration-200 ${
+                  canScrollLeft 
+                    ? 'bg-gray-100 hover:bg-gray-200 text-gray-700' 
+                    : 'bg-gray-50 text-gray-300 cursor-not-allowed'
+                }`}
               >
-                <svg className="w-4 h-4 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                 </svg>
               </button>
               <button
                 onClick={scrollRight}
-                className="p-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
-                title="Scroll right"
+                disabled={!canScrollRight}
+                className={`p-2 rounded-lg transition-all duration-200 ${
+                  canScrollRight 
+                    ? 'bg-gray-100 hover:bg-gray-200 text-gray-700' 
+                    : 'bg-gray-50 text-gray-300 cursor-not-allowed'
+                }`}
               >
-                <svg className="w-4 h-4 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
               </button>
@@ -139,20 +169,26 @@ const MyEventsSection = ({ onEventClick }) => {
         </div>
       </div>
 
-      {events.length === 0 ? (
+      {filteredEvents.length === 0 ? (
         <div className="text-center py-12">
           <div className="text-6xl mb-4">🏆</div>
           <p className="text-gray-600 text-lg mb-2">No events yet</p>
-          <p className="text-gray-500 text-sm">Create events or join teams to see them here!</p>
+          <p className="text-gray-500 text-sm">
+            {sportFilter === 'all' 
+              ? "You haven't created or joined any events yet. Create your first event to get started!"
+              : `No ${sportFilter} events found. Try selecting a different sport or create a new event.`
+            }
+          </p>
         </div>
       ) : (
         <div className="relative">
           <div 
             ref={scrollContainerRef}
             className="flex space-x-4 overflow-x-auto scrollbar-hide pb-2"
+            onScroll={checkScrollability}
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           >
-            {events.map(event => (
+            {filteredEvents.map(event => (
               <div key={event._id} className="flex-shrink-0 w-72">
                 <EventCard
                   event={event}

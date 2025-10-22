@@ -7,6 +7,12 @@ import AllEventsPanel from "../components/event/AllEventsPanel";
 import CreateEventModal from "../components/event/CreateEventModal";
 import Toast from "../components/ui/Toast";
 import SettingsDropdown from "../components/ui/SettingsDropdown";
+import { 
+  HeroSection, 
+  GlobalHighlightsCarousel, 
+  StatisticsSection, 
+  SportsCategories 
+} from "../components/homepage";
 
 export default function HomePage() {
   const [user, setUser] = useState(null);
@@ -14,6 +20,9 @@ export default function HomePage() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
+  const [selectedSport, setSelectedSport] = useState('all');
+  const [allEvents, setAllEvents] = useState([]);
+  const [globalHighlights, setGlobalHighlights] = useState([]);
 
   const showToast = (message, type = 'success') => {
     setToast({ show: true, message, type });
@@ -47,6 +56,88 @@ export default function HomePage() {
     return () => {
       socketService.disconnect();
     };
+  }, []);
+
+  // Fetch all events and process global highlights
+  useEffect(() => {
+    const fetchEventsAndHighlights = async () => {
+      try {
+        const response = await api.get('/events/all');
+        const events = response.data.events;
+        setAllEvents(events);
+        
+        // Extract all highlights from all events
+        const highlights = [];
+        events.forEach(event => {
+          console.log('Processing event:', event.eventName);
+          console.log('Event matches:', event.matches);
+          
+          event.matches?.forEach(match => {
+            console.log('Processing match:', match);
+            console.log('Match highlights:', match.highlights);
+            
+            match.highlights?.forEach(highlight => {
+              console.log('Processing highlight:', highlight);
+              
+              // Extract media URL from the media property
+              let mediaUrl = null;
+              if (highlight.media && highlight.media.url) {
+                mediaUrl = highlight.media.url;
+              }
+              
+              console.log('Extracted mediaUrl:', mediaUrl);
+              
+              // Extract team names from team objects
+              let teamNames = [];
+              if (match.teams && Array.isArray(match.teams)) {
+                teamNames = match.teams.map(team => {
+                  if (typeof team === 'object' && team.teamName) {
+                    return team.teamName;
+                  } else if (typeof team === 'string') {
+                    return team; // If it's already a string, use as is
+                  }
+                  return 'Unknown Team';
+                });
+              }
+              
+              highlights.push({
+                ...highlight,
+                mediaUrl: mediaUrl,
+                eventName: event.eventName,
+                matchDetails: {
+                  teams: teamNames,
+                  date: match.scheduledDate
+                }
+              });
+            });
+          });
+        });
+        
+        // Sort by createdAt and take 3 most recent
+        const recentHighlights = highlights
+          .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+          .slice(0, 3);
+        
+        console.log('All highlights found:', highlights.length);
+        console.log('Recent highlights:', recentHighlights);
+        console.log('Sample highlight:', recentHighlights[0]);
+        
+        setGlobalHighlights(recentHighlights);
+      } catch (error) {
+        console.error('Error fetching events and highlights:', error);
+        console.error('Error details:', {
+          status: error.response?.status,
+          message: error.response?.data?.message,
+          data: error.response?.data
+        });
+        
+        // Set empty arrays to prevent further errors
+        setAllEvents([]);
+        setGlobalHighlights([]);
+      }
+    };
+
+    fetchEventsAndHighlights();
   }, []);
 
   // WebSocket event listeners
@@ -132,6 +223,22 @@ export default function HomePage() {
     console.log('Request updated');
   };
 
+  const handleSportFilter = (sportId) => {
+    setSelectedSport(sportId);
+  };
+
+  const handleCreateEvent = () => {
+    setShowCreateModal(true);
+  };
+
+  const handleExploreEvents = () => {
+    // Scroll to events section or focus on events
+    const eventsSection = document.querySelector('.events-section');
+    if (eventsSection) {
+      eventsSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   if (loading)
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
@@ -145,7 +252,7 @@ export default function HomePage() {
     );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50">
+    <div className="min-h-screen overflow-hidden bg-gradient-to-br from-blue-50 via-white to-gray-50">
       {/* Header/Navbar */}
       <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -179,24 +286,51 @@ export default function HomePage() {
       {/* Notification Bar */}
       <NotificationBar onRequestUpdate={handleRequestUpdate} />
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 lg:gap-8">
-          {/* My Events Section - Left Column (60%) */}
-          <div className="xl:col-span-2">
-            <MyEventsSection onEventClick={handleEventClick} />
-          </div>
+      {/* Hero Section */}
+      <HeroSection 
+        onCreateEvent={handleCreateEvent}
+        onExploreEvents={handleExploreEvents}
+      />
 
-          {/* All Events Section - Right Column (40%) */}
-          <div className="xl:col-span-1">
-            <AllEventsPanel onEventClick={handleEventClick} />
+      {/* Main Content Container - Natural Flow */}
+      <div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 bg-gray-200">
+          {/* Global Highlights Carousel */}
+          <GlobalHighlightsCarousel highlights={globalHighlights} />
+          
+          {/* Statistics Section */}
+          <StatisticsSection events={allEvents} />
+          
+          {/* Sports Categories Filter */}
+          <SportsCategories 
+            onFilterChange={handleSportFilter}
+            selectedSport={selectedSport}
+          />
+          
+          {/* Events Grid */}
+          <div className="events-section grid grid-cols-1 xl:grid-cols-3 gap-6 lg:gap-8">
+            {/* My Events Section - Left Column (60%) */}
+            <div className="xl:col-span-2">
+              <MyEventsSection 
+                sportFilter={selectedSport}
+                onEventClick={handleEventClick} 
+              />
+            </div>
+
+            {/* All Events Section - Right Column (40%) */}
+            <div className="xl:col-span-1">
+              <AllEventsPanel 
+                sportFilter={selectedSport}
+                onEventClick={handleEventClick} 
+              />
+            </div>
           </div>
         </div>
-      </main>
+      </div>
 
       {/* Floating Action Button */}
       <button
-        onClick={() => setShowCreateModal(true)}
+        onClick={handleCreateEvent}
         className="fixed bottom-4 right-4 sm:bottom-8 sm:right-8 w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 flex items-center justify-center z-30"
       >
         <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

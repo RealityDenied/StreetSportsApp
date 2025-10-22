@@ -1,16 +1,32 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import api from '../../api/api';
 import EventCard from './EventCard';
 import socketService from '../../services/socket';
 
-const AllEventsPanel = ({ onEventClick }) => {
+const AllEventsPanel = ({ onEventClick, sportFilter = 'all' }) => {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const scrollContainerRef = useRef(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
 
   useEffect(() => {
     fetchAllEvents();
   }, []);
+
+  // Check scrollability when events change
+  useEffect(() => {
+    checkScrollability();
+  }, [events]);
+
+  // Filter events based on sport filter and search query
+  const filteredEvents = events.filter(event => {
+    const matchesSport = sportFilter === 'all' || event.sportType?.toLowerCase() === sportFilter.toLowerCase();
+    const matchesSearch = event.eventName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         event.description?.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesSport && matchesSearch;
+  });
 
   // Listen for WebSocket events
   useEffect(() => {
@@ -56,10 +72,31 @@ const AllEventsPanel = ({ onEventClick }) => {
     }
   };
 
-  const filteredEvents = events.filter(event =>
-    event.eventName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    event.sportType.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const checkScrollability = () => {
+    if (scrollContainerRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
+      setCanScrollLeft(scrollLeft > 0);
+      setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 1);
+    }
+  };
+
+  const scrollLeft = () => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollBy({
+        left: -300,
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  const scrollRight = () => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollBy({
+        left: 300,
+        behavior: 'smooth'
+      });
+    }
+  };
 
   if (loading) {
     return (
@@ -80,33 +117,81 @@ const AllEventsPanel = ({ onEventClick }) => {
     <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-gray-900 text-xl font-bold">All Events</h2>
-        <div className="relative">
-          <input
-            type="text"
-            placeholder="Search events..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-          <svg className="absolute right-3 top-2.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
+        <div className="flex items-center space-x-3">
+          <span className="text-gray-600 text-sm">{filteredEvents.length} events</span>
+          {filteredEvents.length > 0 && (
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={scrollLeft}
+                disabled={!canScrollLeft}
+                className={`p-2 rounded-lg transition-all duration-200 ${
+                  canScrollLeft 
+                    ? 'bg-gray-100 hover:bg-gray-200 text-gray-700' 
+                    : 'bg-gray-50 text-gray-300 cursor-not-allowed'
+                }`}
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+              <button
+                onClick={scrollRight}
+                disabled={!canScrollRight}
+                className={`p-2 rounded-lg transition-all duration-200 ${
+                  canScrollRight 
+                    ? 'bg-gray-100 hover:bg-gray-200 text-gray-700' 
+                    : 'bg-gray-50 text-gray-300 cursor-not-allowed'
+                }`}
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
-      <div className="space-y-3">
+      {/* Search Bar */}
+      <div className="mb-4">
+        <input
+          type="text"
+          placeholder="Search events..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        />
+      </div>
+
+      <div 
+        ref={scrollContainerRef}
+        className="space-y-3"
+        onScroll={checkScrollability}
+      >
         {filteredEvents.length === 0 ? (
           <div className="text-center py-8">
-            <p className="text-gray-600">No events found</p>
+            <div className="text-gray-400 mb-4">
+              <svg className="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">No events found</h3>
+            <p className="text-gray-500 text-sm">
+              {sportFilter === 'all' 
+                ? "No events match your search criteria. Try adjusting your search or create a new event."
+                : `No ${sportFilter} events found. Try selecting a different sport or create a new event.`
+              }
+            </p>
           </div>
         ) : (
           filteredEvents.map(event => (
-            <EventCard
-              key={event._id}
-              event={event}
-              userRole={null}
-              onEventClick={onEventClick}
-            />
+            <div key={event._id} className="flex-shrink-0">
+              <EventCard
+                event={event}
+                onEventClick={onEventClick}
+                compact={true}
+              />
+            </div>
           ))
         )}
       </div>

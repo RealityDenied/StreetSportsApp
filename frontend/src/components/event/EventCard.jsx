@@ -6,6 +6,26 @@ const EventCard = ({ event, userRole = null, onEventClick }) => {
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
 
+  // Debug: Log poster URL and event data
+  console.log('EventCard event:', event);
+  console.log('EventCard poster:', event?.poster);
+  console.log('EventCard eventName:', event?.eventName);
+  
+  // Extract poster URL from object or string
+  const getPosterUrl = (poster) => {
+    if (!poster) return null;
+    if (typeof poster === 'string') return poster;
+    if (typeof poster === 'object' && poster.url) return poster.url;
+    if (typeof poster === 'object' && poster.public_id) return `https://res.cloudinary.com/${poster.cloud_name || 'your-cloud-name'}/image/upload/${poster.public_id}`;
+    return null;
+  };
+  
+  const posterUrl = getPosterUrl(event?.poster);
+  console.log('Extracted poster URL:', posterUrl);
+  
+  // Use the local placeholder image for all events without posters
+  const placeholderUrl = '/src/placeholderevent.jpg';
+
   const formatDate = (date) => {
     return new Date(date).toLocaleDateString('en-US', {
       month: 'short',
@@ -88,6 +108,28 @@ const EventCard = ({ event, userRole = null, onEventClick }) => {
         className="bg-white border-2 border-blue-200 rounded-xl p-4 cursor-pointer hover:shadow-md hover:border-blue-300 transition-all duration-200 w-full shadow-sm"
         onClick={handleCardClick}
       >
+        {/* Poster Image Section - Always show for uniform card size */}
+        <div className="mb-3">
+          <img 
+            src={posterUrl || placeholderUrl} 
+            alt={posterUrl ? `${event.eventName} poster` : `${event.sportType} placeholder`}
+            className="w-full h-32 object-cover rounded-lg border border-gray-200"
+            onError={(e) => {
+              console.error('Image failed to load:', posterUrl || placeholderUrl);
+              // If both poster and placeholder fail, show a solid color background
+              e.target.style.display = 'none';
+              e.target.parentElement.style.backgroundColor = '#f3f4f6';
+              e.target.parentElement.style.display = 'flex';
+              e.target.parentElement.style.alignItems = 'center';
+              e.target.parentElement.style.justifyContent = 'center';
+              e.target.parentElement.innerHTML = `<div class="text-gray-500 text-sm">${getSportIcon(event.sportType)} ${event.sportType}</div>`;
+            }}
+            onLoad={() => {
+              console.log('Image loaded successfully:', posterUrl || placeholderUrl);
+            }}
+          />
+        </div>
+
         {/* Header Section */}
         <div className="flex items-start justify-between mb-3">
           <div className="flex items-center space-x-2 flex-1 min-w-0">
@@ -146,8 +188,8 @@ const EventCard = ({ event, userRole = null, onEventClick }) => {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
                 </svg>
               </button>
-            </div>
           </div>
+        </div>
         </div>
       </div>
 

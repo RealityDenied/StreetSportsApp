@@ -130,7 +130,12 @@ const getAllEvents = async (req, res) => {
     const events = await Event.find({ status: 'active' })
       .populate('organiser', 'name email')
       .populate('teams')
-      .populate('matches')
+      .populate({
+        path: 'matches',
+        populate: {
+          path: 'highlights'
+        }
+      })
       .sort({ createdAt: -1 });
 
     res.json({ success: true, events });

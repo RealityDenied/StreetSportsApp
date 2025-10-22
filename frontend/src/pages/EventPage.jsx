@@ -391,9 +391,14 @@ const EventPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black">
+      {/* Background overlay with subtle texture */}
+      <div className="absolute inset-0 bg-gradient-to-br from-amber-900/20 via-gray-800/30 to-black/40"></div>
+      
+      {/* Content */}
+      <div className="relative z-10">
       {/* Header */}
-      <header className="bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-sm">
+      <header className="bg-gray-100/95 backdrop-blur-md border-b border-gray-300 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center space-x-3">
@@ -419,8 +424,8 @@ const EventPage = () => {
 
         {/* Quick Actions for Organizers */}
         {isOrganizer && (
-          <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6">
-            <h3 className="text-lg font-semibold text-blue-900 mb-3">Quick Actions</h3>
+          <div className="bg-gray-200/90 border border-gray-300 rounded-xl p-4 mb-6">
+            <h3 className="text-lg font-semibold text-gray-800 mb-3">Quick Actions</h3>
             <div className="flex flex-wrap gap-3">
               <button
                 onClick={() => {
@@ -529,7 +534,7 @@ const EventPage = () => {
         )}
 
         {/* Event Header */}
-        <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm mb-6">
+        <div className="bg-gray-200/90 border border-gray-300 rounded-xl p-6 shadow-sm mb-6">
           <div className="flex items-start justify-between mb-6">
             <div className="flex items-center space-x-4">
               <span className="text-4xl">{getSportIcon(event.sportType)}</span>
@@ -591,7 +596,7 @@ const EventPage = () => {
                     
                     {/* Players Dropdown */}
                     {showPlayersDropdown && (
-                      <div className="absolute top-full left-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-10 w-80 max-h-60 overflow-y-auto">
+                      <div className="absolute top-full left-0 mt-2 bg-gray-200/95 border border-gray-300 rounded-lg shadow-lg z-10 w-80 max-h-60 overflow-y-auto">
                         <div className="p-3">
                           <h4 className="font-semibold text-gray-900 mb-2">All Players</h4>
                           {getAllPlayers().length === 0 ? (
@@ -637,7 +642,7 @@ const EventPage = () => {
                     
                     {/* Audience Dropdown */}
                     {showAudienceDropdown && (
-                      <div className="absolute top-full left-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-10 w-80 max-h-60 overflow-y-auto">
+                      <div className="absolute top-full left-0 mt-2 bg-gray-200/95 border border-gray-300 rounded-lg shadow-lg z-10 w-80 max-h-60 overflow-y-auto">
                         <div className="p-3">
                           <h4 className="font-semibold text-gray-900 mb-2">Audience Members</h4>
                           {(!event.audience?.users || event.audience.users.length === 0) ? (
@@ -689,8 +694,8 @@ const EventPage = () => {
 
           {/* Join/Apply Section - Only show if user is not organizer */}
           {currentUser && !isOrganizer && (
-            <div className="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-lg p-6 mb-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Join This Event</h3>
+            <div className="bg-gray-200/90 border border-gray-300 rounded-lg p-6 mb-6">
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">Join This Event</h3>
               <div className="flex flex-wrap gap-3">
                 {/* Join as Audience */}
                 {!isInAudience() && (
@@ -725,7 +730,7 @@ const EventPage = () => {
                     
                     {/* Apply to specific teams dropdown */}
                     {event.teams && event.teams.length > 0 && (
-                      <div className="absolute top-full left-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-10 min-w-48">
+                      <div className="absolute top-full left-0 mt-2 bg-gray-200/95 border border-gray-300 rounded-lg shadow-lg z-10 min-w-48">
                         <div className="p-2">
                           <div className="text-xs text-gray-500 px-2 py-1">Or apply to specific team:</div>
                           {event.teams.map(team => (
@@ -847,6 +852,7 @@ const EventPage = () => {
         onClose={() => setShowTicketValidator(false)}
         eventId={eventId}
       />
+      </div>
     </div>
   );
 };
