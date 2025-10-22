@@ -57,7 +57,7 @@ const PaymentSuccess = () => {
       
       // Generate ticket data
       const ticket = {
-        id: `TICKET_${Date.now()}_${Math.random().toString(36).substr(2, 9)}_${userResponse.data.user._id}`,
+        id: `TICKET_${Date.now().toString(36).substr(-8)}_${Math.random().toString(36).substr(2, 6)}_${userResponse.data.user._id.substr(-8)}`,
         eventId: eventId,
         eventName: eventResponse.data.event.eventName,
         userName: userResponse.data.user.name,

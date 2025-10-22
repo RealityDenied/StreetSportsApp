@@ -112,7 +112,7 @@ const TicketValidator = ({ isOpen, onClose, eventId }) => {
                 rows={3}
                 value={codeInput}
                 onChange={(e) => setCodeInput(e.target.value)}
-                placeholder='TICKET_1234567890_ABC123  or  {"ticketId":"...","eventId":"...","userId":"..."}'
+                placeholder='TICKET_ABC123_XYZ789_12345678  or  {"ticketId":"...","eventId":"...","userId":"..."}'
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y"
                 onKeyDown={(e) => (e.ctrlKey && e.key === 'Enter') && validateTicket()}
               />

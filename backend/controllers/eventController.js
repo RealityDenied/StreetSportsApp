@@ -1181,10 +1181,23 @@ const validateTicketById = async (req, res) => {
     // The ticket ID should contain the user ID or we need to parse it from QR data
     let userId;
     
-    // Try to extract user ID from ticket ID format: TICKET_timestamp_random_userId
+    // Try to extract user ID from ticket ID format: TICKET_timestamp_random_userIdShort
     const ticketParts = ticketId.split('_');
     if (ticketParts.length >= 4) {
-      userId = ticketParts[3]; // Extract user ID from ticket format
+      const userIdShort = ticketParts[3]; // Extract short user ID from ticket format
+      
+      // Find user by matching the last 8 characters of their ID
+      const users = await User.find({});
+      const matchingUser = users.find(user => user._id.toString().substr(-8) === userIdShort);
+      
+      if (!matchingUser) {
+        return res.status(404).json({
+          success: false,
+          message: 'User not found for this ticket'
+        });
+      }
+      
+      userId = matchingUser._id.toString();
     } else {
       // If ticket format doesn't contain user ID, we need to ask for it
       return res.status(400).json({
