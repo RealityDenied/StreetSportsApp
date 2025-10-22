@@ -11,7 +11,11 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: ["http://localhost:5173", "http://localhost:5174"], // Both Vite ports
+    origin: [
+      "http://localhost:5173", 
+      "http://localhost:5174",
+      "https://your-frontend-app-name.onrender.com"  // Replace with your actual Render frontend URL
+    ],
     methods: ["GET", "POST"]
   }
 });
