@@ -1,6 +1,6 @@
-# 🏏 Street Sports INC (MERN Stack)
+# Street Sports INC (MERN Stack)
 
-# Made by -  Vikash Kumar (NIT Jamshedpur)
+## Made by -  Vikash Kumar (NIT Jamshedpur)
 
 ## 📖 Overview  
 **Street Sports INC** is a full-stack **MERN** web application built using **Vite + React** on the frontend and **Node.js + Express + MongoDB** on the backend.  
@@ -24,7 +24,60 @@ It provides a complete platform to **organize, manage, and participate in local 
 
 ---
 
+## Live Demo 
 
+https://streetsports.onrender.com/
+
+**Demo Account:**  
+📧 Email: mayank@gmail.com  
+🔑 Password: 123456  
+
+⚠️ *If the login button doesn’t work immediately, please wait at least 1 minute — the free Render backend server takes time to start.*
+
+---
+
+## 📸 App Screenshots  
+
+<div align="center">
+
+<!-- Full-width Hero Images -->
+<img src="https://github.com/user-attachments/assets/c47681e4-916e-454a-b27b-e1de1e1438b7" width="80%"/>
+<p><i>Homepage with hero section and Recent Match Highlights</i></p>
+
+<img src="https://github.com/user-attachments/assets/330e7ca3-1da3-455c-ac27-38cd5c6301ce" width="80%"/>
+<p><i>Create and Join Events </i></p>
+
+<!-- Two per row -->
+<table>
+<tr>
+<td align="center" width="50%">
+  <img src="https://github.com/user-attachments/assets/63ce09f2-4894-431e-93c6-2d349f2411d6" width="95%"/>
+  <p><i>Event Page</i></p>
+</td>
+<td align="center" width="50%">
+  <img src="https://github.com/user-attachments/assets/239e5031-7b59-4cc8-b5e4-27c85377805a" width="95%"/>
+  <p><i>Create matches , add players from global list </i></p>
+  
+</td>
+</tr>
+
+<tr>
+<td align="center" width="50%">
+  <img src="https://github.com/user-attachments/assets/1d36ef55-e034-465a-bfe6-86fcc89da02c" width="70%"/>
+<p><i>Update match scores and add media highlights</i></p>
+</td>
+<td align="center" width="50%">
+<img src="https://github.com/user-attachments/assets/43dd32b9-299e-4090-b8df-64825ba1afb9" width="95%"/>
+  <p><i>Stripe gateway for ticket purchase ( for audience and player both)</i></p>  
+</td>
+</tr>
+</table>
+
+<img src="https://github.com/user-attachments/assets/bfb3024c-3df3-4cd2-b372-2621bdda820d" width="50%"/>
+  <p><i> Ticket generation with QR , can be scanned through app by event organiser</i></p>
+</div>
+
+---
 ##  Core Functionalities  
 
 1. Secure **user authentication** (JWT + bcrypt)  
