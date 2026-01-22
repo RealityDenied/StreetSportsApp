@@ -5,38 +5,42 @@ const HeroSection = ({ onCreateEvent, onExploreEvents }) => {
   const heroImage = "https://images.unsplash.com/photo-1546519638-68e109498ffc?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80";
 
   return (
-    <div className="relative h-[180px] sm:h-[200px] overflow-hidden">
+    <div className="relative h-[240px] sm:h-[280px] overflow-hidden border-b border-neutral-800">
       {/* Background Image */}
       <img 
         src={heroImage} 
         alt="Street Sports" 
-        className="w-full h-full object-cover"
+        className="w-full h-full object-cover opacity-20"
       />
       
-      {/* Gradient Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-r from-blue-900/80 to-purple-900/60">
-        <div className="flex flex-col justify-center h-full px-3 sm:px-6 lg:px-8">
-          <div className="max-w-4xl">
-            <h1 className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-bold text-white mb-2 sm:mb-3 leading-tight">
-              Welcome to Street Sports INC
-            </h1>
-            <p className="text-xs sm:text-sm lg:text-base xl:text-lg text-white/90 mb-3 sm:mb-4 max-w-2xl leading-relaxed">
-              Organize, manage, and showcase your street sports events with ease. 
-              Create tournaments, track matches, and share highlights with the community.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+      {/* Dark Overlay */}
+      <div className="absolute inset-0 bg-neutral-900/80">
+        <div className="max-w-7xl mx-auto h-full px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col justify-center h-full">
+            <div className="max-w-4xl">
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-white mb-3 sm:mb-4 leading-tight">
+                Welcome to <span className="text-neutral-400">StreetSports</span>
+              </h1>
+              <p className="text-sm sm:text-base text-neutral-400 mb-4 sm:mb-6 max-w-2xl leading-relaxed">
+                Organize, manage, and showcase your street sports events. 
+                Create tournaments, track matches, and connect with your local sports community.
+              </p>
+            <div className="flex flex-col sm:flex-row gap-3">
               <button 
                 onClick={onCreateEvent}
-                className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-3 sm:px-4 py-2 rounded-lg font-semibold transition-all duration-200 hover:shadow-lg text-sm sm:text-base"
+                className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white px-6 py-3 rounded-xl font-semibold active:scale-[0.98] transition-all duration-200 text-sm shadow-lg shadow-amber-500/20"
+                style={{ aspectRatio: '2.618 / 1' }}
               >
                 Create Event
               </button>
               <button 
                 onClick={onExploreEvents}
-                className="bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white border border-white/30 px-3 sm:px-4 py-2 rounded-lg font-semibold transition-all duration-200 text-sm sm:text-base"
+                className="bg-neutral-800 border border-neutral-700 text-white px-6 py-3 rounded-xl font-semibold hover:bg-neutral-700 active:scale-[0.98] transition-all duration-200 text-sm"
+                style={{ aspectRatio: '2.618 / 1' }}
               >
                 Explore Events
               </button>
+            </div>
             </div>
           </div>
         </div>

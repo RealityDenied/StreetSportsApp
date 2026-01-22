@@ -37,14 +37,20 @@ export default function OnboardingPage() {
   const slides = [
     <WelcomeSlide onNext={next} />,
     <FeatureSlide
-      title="Join Street Matches Instantly"
-      desc="Find local street games happening near you and participate in seconds."
+      title="Join Local Street Matches"
+      desc="Discover and join street sports events happening in your area. Find pickup games, tournaments, and casual matches near you."
       onNext={next}
       onPrev={prev}
     />,
     <FeatureSlide
-      title="Book & Watch Live Leaderboards"
-      desc="View live match stats, scores, and book seats for ongoing games."
+      title="Organize Your Own Events"
+      desc="Create and manage street sports events. Set up matches, invite players, and build your local sports community."
+      onNext={next}
+      onPrev={prev}
+    />,
+    <FeatureSlide
+      title="Live Scores & Statistics"
+      desc="Track real-time match updates, view live leaderboards, and analyze player performance. Stay connected with every game."
       onNext={next}
       onPrev={prev}
     />,
@@ -64,18 +70,20 @@ export default function OnboardingPage() {
   ];
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-blue-500 to-purple-700 text-white">
-      <div className="bg-white text-gray-900 rounded-2xl shadow-xl w-11/12 sm:w-[480px] p-8 transition-all duration-500">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-neutral-900 px-4 py-8">
+      <div className="bg-neutral-800 border border-neutral-700 rounded-2xl shadow-xl w-full max-w-lg p-8 transition-all duration-300">
         {slides[step]}
       </div>
 
       {/* Progress Bar */}
-      <div className="flex mt-6 gap-2">
+      <div className="flex mt-8 gap-2">
         {slides.map((_, i) => (
           <div
             key={i}
-            className={`h-2 w-8 rounded-full ${
-              i <= step ? "bg-white" : "bg-white/40"
+            className={`h-1.5 rounded-full transition-all duration-300 ${
+              i <= step 
+                ? "bg-white w-8" 
+                : "bg-neutral-700 w-2"
             }`}
           ></div>
         ))}

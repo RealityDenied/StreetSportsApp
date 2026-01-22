@@ -61,11 +61,11 @@ const MatchManagement = ({ event, isOrganizer, onMatchCreated }) => {
   if (!isOrganizer) {
     // View-only mode for non-organizers
     return (
-      <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
-        <h3 className="text-xl font-semibold text-gray-900 mb-4">Matches ({matches.length})</h3>
+      <div>
+        <h3 className="text-xl font-semibold text-white mb-4">Matches ({matches.length})</h3>
         
         {matches.length === 0 ? (
-          <p className="text-gray-500 text-center py-8">No matches scheduled yet</p>
+          <p className="text-neutral-400 text-center py-8">No matches scheduled yet</p>
         ) : (
           <div className="space-y-3">
             {matches.map((match, index) => (
@@ -78,40 +78,40 @@ const MatchManagement = ({ event, isOrganizer, onMatchCreated }) => {
   }
 
   return (
-    <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+    <div>
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-xl font-semibold text-gray-900">Matches ({matches.length})</h3>
+        <h3 className="text-xl font-semibold text-white">Matches ({matches.length})</h3>
         <button
           onClick={() => setShowCreateMatch(true)}
           disabled={event.teams?.length < 2}
-          className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+          className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 disabled:bg-neutral-700 disabled:text-neutral-500 text-white px-4 py-2 rounded-xl text-sm font-medium transition-all shadow-lg shadow-amber-500/20"
         >
           Create Match
         </button>
       </div>
 
       {event.teams?.length < 2 && (
-        <p className="text-gray-500 text-sm mb-4">You need at least 2 teams to create a match</p>
+        <p className="text-neutral-400 text-sm mb-4">You need at least 2 teams to create a match</p>
       )}
 
       {/* Create Match Form */}
       {showCreateMatch && (
-        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-4">
-          <h4 className="font-semibold text-gray-900 mb-3">Select 2 Teams for Match</h4>
+        <div className="bg-neutral-800 border border-neutral-700 rounded-xl p-4 mb-4">
+          <h4 className="font-semibold text-white mb-3">Select 2 Teams for Match</h4>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mb-4">
             {event.teams?.map((team) => (
               <div
                 key={team._id}
                 onClick={() => handleTeamSelect(team._id)}
-                className={`p-3 rounded-lg border-2 cursor-pointer transition-colors ${
+                className={`p-3 rounded-xl border-2 cursor-pointer transition-all ${
                   selectedTeams.includes(team._id)
-                    ? 'border-blue-500 bg-blue-50'
-                    : 'border-gray-200 bg-white hover:border-gray-300'
+                    ? 'border-amber-500 bg-amber-500/20'
+                    : 'border-neutral-700 bg-neutral-800 hover:border-neutral-600'
                 }`}
               >
-                <p className="font-medium text-gray-900">{team.teamName}</p>
-                <p className="text-sm text-gray-500">Members: {team.users?.length || 0}</p>
+                <p className="font-medium text-white">{team.teamName}</p>
+                <p className="text-sm text-neutral-400">Members: {team.users?.length || 0}</p>
               </div>
             ))}
           </div>
@@ -120,7 +120,7 @@ const MatchManagement = ({ event, isOrganizer, onMatchCreated }) => {
             <button
               onClick={handleCreateMatch}
               disabled={loading || selectedTeams.length !== 2}
-              className="bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+              className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 disabled:bg-neutral-700 disabled:text-neutral-500 text-white px-4 py-2 rounded-xl text-sm font-medium transition-all shadow-lg shadow-amber-500/20"
             >
               {loading ? 'Creating...' : 'Create Match'}
             </button>
@@ -129,7 +129,7 @@ const MatchManagement = ({ event, isOrganizer, onMatchCreated }) => {
                 setShowCreateMatch(false);
                 setSelectedTeams([]);
               }}
-              className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+              className="bg-neutral-700 hover:bg-neutral-600 text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors"
             >
               Cancel
             </button>
@@ -139,7 +139,7 @@ const MatchManagement = ({ event, isOrganizer, onMatchCreated }) => {
 
       {/* Matches List */}
       {matches.length === 0 ? (
-        <p className="text-gray-500 text-center py-8">No matches scheduled yet</p>
+        <p className="text-neutral-400 text-center py-8">No matches scheduled yet</p>
       ) : (
         <div className="space-y-3">
           {matches.map((match, index) => (
@@ -214,15 +214,15 @@ const MatchCard = ({ match, teams, isOrganizer, eventId }) => {
   };
 
   return (
-    <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+    <div className="bg-neutral-800 border border-neutral-700 rounded-xl p-4">
       <div className="flex items-center justify-between mb-3">
-        <h4 className="font-semibold text-gray-900">
+        <h4 className="font-semibold text-white">
           {getTeamName(match.teams[0])} vs {getTeamName(match.teams[1])}
         </h4>
         <span className={`px-2 py-1 rounded-full text-xs font-medium ${
           match.status === 'completed' 
-            ? 'bg-green-100 text-green-800' 
-            : 'bg-yellow-100 text-yellow-800'
+            ? 'bg-green-500/20 text-green-400 border border-green-500/30' 
+            : 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
         }`}>
           {match.status}
         </span>
@@ -230,11 +230,11 @@ const MatchCard = ({ match, teams, isOrganizer, eventId }) => {
 
       {match.status === 'completed' && match.won && (
         <div className="mb-3">
-          <p className="text-sm text-gray-600">
-            <span className="font-medium text-green-600">Winner:</span> {getTeamName(match.won)}
+          <p className="text-sm text-neutral-300">
+            <span className="font-medium text-amber-400">Winner:</span> {getTeamName(match.won)}
           </p>
           {match.score && (
-            <p className="text-sm text-gray-600">Score: {match.score}</p>
+            <p className="text-sm text-neutral-300">Score: {match.score}</p>
           )}
         </div>
       )}
@@ -244,18 +244,18 @@ const MatchCard = ({ match, teams, isOrganizer, eventId }) => {
           {!showUpdateResult ? (
             <button
               onClick={() => setShowUpdateResult(true)}
-              className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm font-medium transition-colors"
+              className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white px-3 py-1.5 rounded-xl text-sm font-medium transition-all shadow-md shadow-amber-500/20"
             >
               Update Result
             </button>
           ) : (
             <form onSubmit={handleUpdateResult} className="space-y-3">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Winning Team</label>
+                <label className="block text-sm font-medium text-neutral-300 mb-1">Winning Team</label>
                 <select
                   value={winningTeam}
                   onChange={(e) => setWinningTeam(e.target.value)}
-                  className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full bg-neutral-900 border border-neutral-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
                   required
                 >
                   <option value="">Select winning team...</option>
@@ -268,13 +268,13 @@ const MatchCard = ({ match, teams, isOrganizer, eventId }) => {
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Score (Optional)</label>
+                <label className="block text-sm font-medium text-neutral-300 mb-1">Score (Optional)</label>
                 <input
                   type="text"
                   value={score}
                   onChange={(e) => setScore(e.target.value)}
                   placeholder="e.g., 2-1, 15-12"
-                  className="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full bg-neutral-900 border border-neutral-700 rounded-lg px-3 py-2 text-sm text-white placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
                 />
               </div>
 
@@ -282,7 +282,7 @@ const MatchCard = ({ match, teams, isOrganizer, eventId }) => {
                 <button
                   type="submit"
                   disabled={updating}
-                  className="bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white px-3 py-1 rounded text-sm font-medium transition-colors"
+                  className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 disabled:bg-neutral-700 disabled:text-neutral-500 text-white px-3 py-1.5 rounded-xl text-sm font-medium transition-all shadow-md shadow-amber-500/20"
                 >
                   {updating ? 'Updating...' : 'Update'}
                 </button>
@@ -293,7 +293,7 @@ const MatchCard = ({ match, teams, isOrganizer, eventId }) => {
                     setWinningTeam('');
                     setScore('');
                   }}
-                  className="bg-gray-500 hover:bg-gray-600 text-white px-3 py-1 rounded text-sm font-medium transition-colors"
+                  className="bg-neutral-700 hover:bg-neutral-600 text-white px-3 py-1.5 rounded-xl text-sm font-medium transition-colors"
                 >
                   Cancel
                 </button>
@@ -304,15 +304,15 @@ const MatchCard = ({ match, teams, isOrganizer, eventId }) => {
       )}
 
       {/* Highlights Section */}
-      <div className="mt-4 pt-4 border-t border-gray-200">
+      <div className="mt-4 pt-4 border-t border-neutral-700">
         <div className="flex items-center justify-between mb-3">
-          <h5 className="font-medium text-gray-900">
+          <h5 className="font-medium text-white">
             Highlights ({highlights.length})
           </h5>
           {isOrganizer && (
             <button
               onClick={() => setShowHighlightModal(true)}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm font-medium transition-colors flex items-center space-x-1"
+              className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white px-3 py-1.5 rounded-xl text-sm font-medium transition-all flex items-center space-x-1 shadow-md shadow-amber-500/20"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -337,7 +337,7 @@ const MatchCard = ({ match, teams, isOrganizer, eventId }) => {
         )}
 
         {highlights.length === 0 && (
-          <p className="text-gray-500 text-sm text-center py-4">
+          <p className="text-neutral-400 text-sm text-center py-4">
             No highlights added yet
           </p>
         )}

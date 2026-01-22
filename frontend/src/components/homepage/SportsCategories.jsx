@@ -51,18 +51,22 @@ const SportsCategories = ({ onFilterChange, selectedSport }) => {
   };
 
   return (
-    <div className="py-6">
+    <div className="py-0">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-bold text-gray-900">Filter by Sport</h2>
+        <div>
+          <h2 className="text-xl font-semibold text-white mb-1">Filter by Sport</h2>
+          <p className="text-neutral-400 text-xs">Select a sport to filter events</p>
+        </div>
         <div className="flex space-x-2">
           <button
             onClick={scrollLeft}
             disabled={!canScrollLeft}
             className={`p-2 rounded-lg transition-all duration-200 ${
               canScrollLeft 
-                ? 'bg-gray-100 hover:bg-gray-200 text-gray-700' 
-                : 'bg-gray-50 text-gray-300 cursor-not-allowed'
+                ? 'bg-neutral-800 border border-neutral-700 hover:bg-amber-500 hover:border-amber-500 text-white' 
+                : 'bg-neutral-800 border border-neutral-700 text-neutral-600 cursor-not-allowed'
             }`}
+            aria-label="Scroll left"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -73,9 +77,10 @@ const SportsCategories = ({ onFilterChange, selectedSport }) => {
             disabled={!canScrollRight}
             className={`p-2 rounded-lg transition-all duration-200 ${
               canScrollRight 
-                ? 'bg-gray-100 hover:bg-gray-200 text-gray-700' 
-                : 'bg-gray-50 text-gray-300 cursor-not-allowed'
+                ? 'bg-neutral-800 border border-neutral-700 hover:bg-amber-500 hover:border-amber-500 text-white' 
+                : 'bg-neutral-800 border border-neutral-700 text-neutral-600 cursor-not-allowed'
             }`}
+            aria-label="Scroll right"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -95,11 +100,12 @@ const SportsCategories = ({ onFilterChange, selectedSport }) => {
             <button
               key={sport.id}
               onClick={() => handleSportSelect(sport.id)}
-              className={`flex-shrink-0 px-4 py-3 rounded-lg font-medium transition-all duration-200 whitespace-nowrap ${
+              className={`flex-shrink-0 px-5 py-3 rounded-xl font-medium transition-all duration-200 whitespace-nowrap ${
                 selectedSport === sport.id
-                  ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md'
-                  : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200 hover:border-gray-300'
+                  ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-lg shadow-amber-500/20'
+                  : 'bg-neutral-800 border border-neutral-700 text-neutral-300 hover:bg-neutral-700 hover:border-neutral-600'
               }`}
+              style={{ aspectRatio: '2.618 / 1' }}
             >
               <span className="mr-2 text-lg">{sport.icon}</span>
               {sport.name}
@@ -108,8 +114,8 @@ const SportsCategories = ({ onFilterChange, selectedSport }) => {
         </div>
 
         {/* Gradient overlays for better UX */}
-        <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-white to-transparent pointer-events-none" />
-        <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-white to-transparent pointer-events-none" />
+        <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-neutral-900 to-transparent pointer-events-none" />
+        <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-neutral-900 to-transparent pointer-events-none" />
       </div>
 
       {/* Clear filter button */}
@@ -117,7 +123,7 @@ const SportsCategories = ({ onFilterChange, selectedSport }) => {
         <div className="mt-4 text-center">
           <button
             onClick={() => handleSportSelect('all')}
-            className="text-sm text-blue-600 hover:text-blue-700 font-medium transition-colors duration-200"
+            className="text-sm text-neutral-400 hover:text-white font-medium transition-colors duration-200"
           >
             Clear Filter
           </button>

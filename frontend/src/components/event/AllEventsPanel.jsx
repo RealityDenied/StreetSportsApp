@@ -113,12 +113,12 @@ const AllEventsPanel = ({ onEventClick, sportFilter = 'all' }) => {
 
   if (loading) {
     return (
-      <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6">
+      <div className="bg-neutral-800 border border-neutral-700 rounded-xl p-6">
         <div className="animate-pulse">
-          <div className="h-6 bg-white/20 rounded mb-4"></div>
+          <div className="h-6 bg-neutral-700 rounded mb-4"></div>
           <div className="space-y-3">
             {[1, 2, 3].map(i => (
-              <div key={i} className="h-20 bg-white/10 rounded"></div>
+              <div key={i} className="h-20 bg-neutral-700 rounded"></div>
             ))}
           </div>
         </div>
@@ -127,11 +127,11 @@ const AllEventsPanel = ({ onEventClick, sportFilter = 'all' }) => {
   }
 
   return (
-    <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+    <div className="bg-neutral-800 border border-neutral-700 rounded-xl p-6 shadow-lg">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-gray-900 text-xl font-bold">All Events</h2>
+        <h2 className="text-white text-xl font-semibold">All Events</h2>
         <div className="flex items-center justify-between">
-          <span className="text-gray-600 text-sm">{filteredEvents.length} events</span>
+          <span className="text-neutral-400 text-sm">{filteredEvents.length} events</span>
           {totalPages > 1 && (
             <div className="flex items-center space-x-2">
               <button
@@ -139,13 +139,13 @@ const AllEventsPanel = ({ onEventClick, sportFilter = 'all' }) => {
                 disabled={currentPage === 1}
                 className={`px-3 py-1 rounded-lg text-sm transition-all duration-200 ${
                   currentPage === 1 
-                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
-                    : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
+                    ? 'bg-neutral-700 text-neutral-500 cursor-not-allowed' 
+                    : 'bg-neutral-700 hover:bg-amber-500 hover:text-white text-neutral-300'
                 }`}
               >
                 Previous
               </button>
-              <span className="text-sm text-gray-600">
+              <span className="text-sm text-neutral-400">
                 {currentPage} of {totalPages}
               </span>
               <button
@@ -153,8 +153,8 @@ const AllEventsPanel = ({ onEventClick, sportFilter = 'all' }) => {
                 disabled={currentPage === totalPages}
                 className={`px-3 py-1 rounded-lg text-sm transition-all duration-200 ${
                   currentPage === totalPages 
-                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
-                    : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
+                    ? 'bg-neutral-700 text-neutral-500 cursor-not-allowed' 
+                    : 'bg-neutral-700 hover:bg-amber-500 hover:text-white text-neutral-300'
                 }`}
               >
                 Next
@@ -171,7 +171,7 @@ const AllEventsPanel = ({ onEventClick, sportFilter = 'all' }) => {
           placeholder="Search events..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="w-full px-4 py-2 bg-neutral-900 border border-neutral-700 rounded-lg text-white placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-all"
         />
       </div>
 
@@ -182,13 +182,13 @@ const AllEventsPanel = ({ onEventClick, sportFilter = 'all' }) => {
       >
         {filteredEvents.length === 0 ? (
           <div className="text-center py-8">
-            <div className="text-gray-400 mb-4">
+            <div className="text-neutral-500 mb-4">
               <svg className="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
               </svg>
             </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No events found</h3>
-            <p className="text-gray-500 text-sm">
+            <h3 className="text-lg font-medium text-white mb-2">No events found</h3>
+            <p className="text-neutral-400 text-sm">
               {sportFilter === 'all' 
                 ? "No events match your search criteria. Try adjusting your search or create a new event."
                 : `No ${sportFilter} events found. Try selecting a different sport or create a new event.`

@@ -130,12 +130,12 @@ const MyEventsSection = ({ onEventClick, sportFilter = 'all' }) => {
 
   if (loading) {
     return (
-      <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6">
+      <div className="bg-neutral-800 border border-neutral-700 rounded-xl p-6">
         <div className="animate-pulse">
-          <div className="h-6 bg-white/20 rounded mb-4"></div>
+          <div className="h-6 bg-neutral-700 rounded mb-4"></div>
           <div className="flex space-x-4">
             {[1, 2, 3].map(i => (
-              <div key={i} className="w-64 h-32 bg-white/10 rounded"></div>
+              <div key={i} className="w-64 h-32 bg-neutral-700 rounded"></div>
             ))}
           </div>
         </div>
@@ -144,11 +144,11 @@ const MyEventsSection = ({ onEventClick, sportFilter = 'all' }) => {
   }
 
   return (
-    <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+    <div className="bg-neutral-800 border border-neutral-700 rounded-xl p-6 shadow-lg">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-gray-900 text-xl font-bold">My Events & Participations</h2>
+        <h2 className="text-white text-xl font-semibold">My Events & Participations</h2>
         <div className="flex items-center justify-between">
-          <span className="text-gray-600 text-sm">{filteredEvents.length} events</span>
+          <span className="text-neutral-400 text-sm">{filteredEvents.length} events</span>
           {totalPages > 1 && (
             <div className="flex items-center space-x-2">
               <button
@@ -156,13 +156,13 @@ const MyEventsSection = ({ onEventClick, sportFilter = 'all' }) => {
                 disabled={currentPage === 1}
                 className={`px-3 py-1 rounded-lg text-sm transition-all duration-200 ${
                   currentPage === 1 
-                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
-                    : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
+                    ? 'bg-neutral-700 text-neutral-500 cursor-not-allowed' 
+                    : 'bg-neutral-700 hover:bg-amber-500 hover:text-white text-neutral-300'
                 }`}
               >
                 Previous
               </button>
-              <span className="text-sm text-gray-600">
+              <span className="text-sm text-neutral-400">
                 {currentPage} of {totalPages}
               </span>
               <button
@@ -170,8 +170,8 @@ const MyEventsSection = ({ onEventClick, sportFilter = 'all' }) => {
                 disabled={currentPage === totalPages}
                 className={`px-3 py-1 rounded-lg text-sm transition-all duration-200 ${
                   currentPage === totalPages 
-                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
-                    : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
+                    ? 'bg-neutral-700 text-neutral-500 cursor-not-allowed' 
+                    : 'bg-neutral-700 hover:bg-amber-500 hover:text-white text-neutral-300'
                 }`}
               >
                 Next
@@ -184,8 +184,8 @@ const MyEventsSection = ({ onEventClick, sportFilter = 'all' }) => {
       {filteredEvents.length === 0 ? (
         <div className="text-center py-12">
           <div className="text-6xl mb-4">🏆</div>
-          <p className="text-gray-600 text-lg mb-2">No events yet</p>
-          <p className="text-gray-500 text-sm">
+          <p className="text-white text-lg mb-2">No events yet</p>
+          <p className="text-neutral-400 text-sm">
             {sportFilter === 'all' 
               ? "You haven't created or joined any events yet. Create your first event to get started!"
               : `No ${sportFilter} events found. Try selecting a different sport or create a new event.`

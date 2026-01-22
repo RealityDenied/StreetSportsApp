@@ -248,10 +248,10 @@ export default function HomePage() {
 
   if (loading)
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
+      <div className="min-h-screen bg-neutral-900 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-          <div className="text-white text-lg font-semibold animate-pulse">
+          <div className="animate-spin rounded-full h-12 w-12 border-2 border-neutral-700 border-t-amber-500 mx-auto mb-4"></div>
+          <div className="text-neutral-300 text-base font-medium">
             Loading your dashboard...
           </div>
         </div>
@@ -259,7 +259,7 @@ export default function HomePage() {
     );
 
   return (
-    <div className="min-h-screen overflow-hidden bg-gradient-to-br from-blue-50 via-white to-gray-50">
+    <div className="min-h-screen overflow-hidden bg-neutral-900">
       {/* Header/Navbar */}
       <ProfessionalNavbar 
         user={user} 
@@ -277,23 +277,31 @@ export default function HomePage() {
       />
 
       {/* Main Content Container - Natural Flow */}
-      <div>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 bg-gray-200">
+      <div className="bg-neutral-900 min-h-screen">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
           {/* Global Highlights Carousel */}
-          <div className="highlights-section">
-            <GlobalHighlightsCarousel highlights={globalHighlights} />
+          <div className="highlights-section mb-8">
+            <div className="bg-neutral-800/50 rounded-2xl p-6 border border-neutral-700/50">
+              <GlobalHighlightsCarousel highlights={globalHighlights} />
+            </div>
           </div>
           
           {/* Statistics Section */}
-          <div className="statistics-section">
-            <StatisticsSection events={allEvents} />
+          <div className="statistics-section mb-8">
+            <div className="bg-neutral-800/50 rounded-2xl p-6 border border-neutral-700/50">
+              <StatisticsSection events={allEvents} />
+            </div>
           </div>
           
           {/* Sports Categories Filter */}
-          <SportsCategories 
-            onFilterChange={handleSportFilter}
-            selectedSport={selectedSport}
-          />
+          <div className="mb-8">
+            <div className="bg-neutral-800/50 rounded-2xl p-6 border border-neutral-700/50">
+              <SportsCategories 
+                onFilterChange={handleSportFilter}
+                selectedSport={selectedSport}
+              />
+            </div>
+          </div>
           
           {/* Events Grid */}
           <div className="events-section grid grid-cols-1 xl:grid-cols-3 gap-6 lg:gap-8">
@@ -316,12 +324,14 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* Floating Action Button */}
+      {/* Floating Action Button - Golden Ratio */}
       <button
         onClick={handleCreateEvent}
-        className="fixed bottom-4 right-4 sm:bottom-8 sm:right-8 w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 flex items-center justify-center z-30"
+        className="fixed bottom-4 right-4 sm:bottom-8 sm:right-8 bg-gradient-to-br from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white rounded-full shadow-lg shadow-amber-500/30 hover:shadow-amber-500/50 transition-all duration-300 hover:scale-110 flex items-center justify-center z-30"
+        style={{ width: '64px', height: '64px' }}
+        aria-label="Create new event"
       >
-        <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
         </svg>
       </button>
@@ -335,24 +345,24 @@ export default function HomePage() {
 
       {/* Event Details Modal (placeholder for future implementation) */}
       {selectedEvent && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-slate-900 border border-white/20 rounded-xl p-6 w-full max-w-md">
+        <div className="fixed inset-0 bg-neutral-900/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-neutral-800 border border-neutral-700 rounded-xl p-6 w-full max-w-md">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-white text-lg font-semibold">{selectedEvent.eventName}</h3>
               <button
                 onClick={() => setSelectedEvent(null)}
-                className="text-white/60 hover:text-white transition-colors"
+                className="text-neutral-400 hover:text-white transition-colors"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
             </div>
-            <div className="text-white/80">
-              <p><strong>Sport:</strong> {selectedEvent.sportType}</p>
-              <p><strong>Teams:</strong> {selectedEvent.teams?.length || 0}</p>
-              <p><strong>Matches:</strong> {selectedEvent.matches?.length || 0}</p>
-              <p><strong>Status:</strong> {selectedEvent.status}</p>
+            <div className="text-neutral-300 space-y-2 text-sm">
+              <p><span className="text-neutral-500">Sport:</span> {selectedEvent.sportType}</p>
+              <p><span className="text-neutral-500">Teams:</span> {selectedEvent.teams?.length || 0}</p>
+              <p><span className="text-neutral-500">Matches:</span> {selectedEvent.matches?.length || 0}</p>
+              <p><span className="text-neutral-500">Status:</span> {selectedEvent.status}</p>
             </div>
           </div>
         </div>

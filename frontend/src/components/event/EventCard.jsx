@@ -105,7 +105,7 @@ const EventCard = ({ event, userRole = null, onEventClick }) => {
   return (
     <>
       <div 
-        className="bg-white border-2 border-blue-200 rounded-xl p-4 cursor-pointer hover:shadow-md hover:border-blue-300 transition-all duration-200 w-full shadow-sm"
+        className="bg-neutral-800 border border-neutral-700 rounded-xl p-4 cursor-pointer hover:shadow-lg hover:border-amber-500/50 transition-all duration-200 w-full shadow-sm"
         onClick={handleCardClick}
       >
         {/* Poster Image Section - Always show for uniform card size */}
@@ -113,7 +113,7 @@ const EventCard = ({ event, userRole = null, onEventClick }) => {
           <img 
             src={posterUrl || placeholderUrl} 
             alt={posterUrl ? `${event.eventName} poster` : `${event.sportType} placeholder`}
-            className="w-full h-32 object-cover rounded-lg border border-gray-200"
+            className="w-full h-32 object-cover rounded-lg border border-neutral-700"
             onError={(e) => {
               console.error('Image failed to load:', posterUrl || placeholderUrl);
               // If both poster and placeholder fail, show a solid color background
@@ -135,53 +135,53 @@ const EventCard = ({ event, userRole = null, onEventClick }) => {
           <div className="flex items-center space-x-2 flex-1 min-w-0">
             <span className="text-xl sm:text-2xl flex-shrink-0">{getSportIcon(event.sportType)}</span>
             <div className="min-w-0 flex-1">
-              <h3 className="text-gray-900 font-semibold text-sm sm:text-lg truncate">{event.eventName}</h3>
-              <p className="text-gray-600 text-xs sm:text-sm">{event.sportType}</p>
+              <h3 className="text-white font-semibold text-sm sm:text-lg truncate">{event.eventName}</h3>
+              <p className="text-neutral-400 text-xs sm:text-sm">{event.sportType}</p>
             </div>
           </div>
           {getRoleIndicator()}
         </div>
 
         {/* Stats Section */}
-        <div className="grid grid-cols-2 gap-3 text-sm text-gray-600 mb-3">
+        <div className="grid grid-cols-2 gap-3 text-sm text-neutral-400 mb-3">
           <div className="text-center">
             <p className="font-medium text-xs">Teams</p>
-            <p className="text-gray-900 text-lg font-semibold">{event.teams?.length || 0}</p>
+            <p className="text-white text-lg font-semibold">{event.teams?.length || 0}</p>
           </div>
           <div className="text-center">
             <p className="font-medium text-xs">Participants</p>
-            <p className="text-gray-900 text-lg font-semibold">{event.participants?.length || 0}</p>
+            <p className="text-white text-lg font-semibold">{event.participants?.length || 0}</p>
           </div>
           <div className="text-center">
             <p className="font-medium text-xs">Audience</p>
-            <p className="text-gray-900 text-lg font-semibold">{event.audience?.users?.length || 0}</p>
+            <p className="text-white text-lg font-semibold">{event.audience?.users?.length || 0}</p>
           </div>
           <div className="text-center">
             <p className="font-medium text-xs">Matches</p>
-            <p className="text-gray-900 text-lg font-semibold">{event.matches?.length || 0}</p>
+            <p className="text-white text-lg font-semibold">{event.matches?.length || 0}</p>
           </div>
         </div>
 
         {/* Footer Section */}
-        <div className="pt-3 border-t border-gray-200">
+        <div className="pt-3 border-t border-neutral-700">
           <div className="flex items-center justify-between">
             <div className="flex flex-col">
-              <span className="text-gray-500 text-xs">
+              <span className="text-neutral-500 text-xs">
                 {formatDate(event.createdAt)}
               </span>
               {event.duration && (
-                <span className="text-gray-500 text-xs">
+                <span className="text-neutral-500 text-xs">
                   {event.duration} day{event.duration > 1 ? 's' : ''}
                 </span>
               )}
             </div>
             <div className="flex items-center space-x-1">
-              <span className="text-gray-500 text-xs truncate max-w-[60px] sm:max-w-[80px]">
+              <span className="text-neutral-500 text-xs truncate max-w-[60px] sm:max-w-[80px]">
                 {event._id.slice(-6)}
               </span>
               <button
                 onClick={handleCopyLink}
-                className="text-gray-500 hover:text-gray-700 transition-colors p-1 hover:bg-gray-100 rounded flex-shrink-0"
+                className="text-neutral-500 hover:text-amber-500 transition-colors p-1 hover:bg-neutral-700 rounded flex-shrink-0"
                 title="Copy event link"
               >
                 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">

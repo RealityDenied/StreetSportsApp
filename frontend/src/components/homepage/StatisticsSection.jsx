@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-const StatCard = ({ icon, value, label, gradient, delay = 0 }) => {
+const StatCard = ({ icon, value, label, delay = 0 }) => {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
@@ -13,17 +13,17 @@ const StatCard = ({ icon, value, label, gradient, delay = 0 }) => {
 
   return (
     <div 
-      className={`bg-white rounded-xl shadow-lg p-6 transform transition-all duration-500 ${
+      className={`bg-neutral-800 border border-neutral-700 rounded-xl p-6 transform transition-all duration-500 hover:border-amber-500/50 ${
         isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
       }`}
     >
-      <div className={`w-12 h-12 rounded-lg bg-gradient-to-r ${gradient} flex items-center justify-center mb-4`}>
+      <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-amber-500/20 to-orange-600/20 border border-amber-500/30 flex items-center justify-center mb-4">
         {icon}
       </div>
-      <div className="text-3xl font-bold text-gray-900 mb-2">
+      <div className="text-3xl font-semibold text-white mb-2">
         {value}
       </div>
-      <div className="text-gray-600 font-medium">
+      <div className="text-neutral-400 font-medium text-sm">
         {label}
       </div>
     </div>
@@ -76,10 +76,10 @@ const StatisticsSection = ({ events = [] }) => {
   }, [events]);
 
   return (
-    <div className="py-8">
+    <div className="py-0">
       <div className="text-center mb-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Platform Statistics</h2>
-        <p className="text-gray-600">Track the growth of our street sports community</p>
+        <h2 className="text-2xl font-semibold text-white mb-2">Platform Statistics</h2>
+        <p className="text-neutral-400 text-sm">Track the growth of our street sports community</p>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 lg:gap-6">
@@ -91,7 +91,6 @@ const StatisticsSection = ({ events = [] }) => {
           }
           value={stats.totalEvents}
           label="Total Events"
-          gradient="from-blue-500 to-blue-600"
           delay={0}
         />
 
@@ -103,7 +102,6 @@ const StatisticsSection = ({ events = [] }) => {
           }
           value={stats.activePlayers}
           label="Active Players"
-          gradient="from-green-500 to-green-600"
           delay={100}
         />
 
@@ -115,7 +113,6 @@ const StatisticsSection = ({ events = [] }) => {
           }
           value={stats.totalMatches}
           label="Total Matches"
-          gradient="from-purple-500 to-purple-600"
           delay={200}
         />
 
@@ -127,7 +124,6 @@ const StatisticsSection = ({ events = [] }) => {
           }
           value={stats.liveEvents}
           label="Live Events"
-          gradient="from-red-500 to-red-600"
           delay={300}
         />
       </div>

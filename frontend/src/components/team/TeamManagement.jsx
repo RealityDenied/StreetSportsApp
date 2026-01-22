@@ -46,11 +46,11 @@ const TeamManagement = ({ event, isOrganizer, onTeamCreated }) => {
   if (!isOrganizer) {
     // View-only mode for non-organizers - show team details but no management controls
     return (
-      <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
-        <h3 className="text-xl font-semibold text-gray-900 mb-4">Teams ({teams.length})</h3>
+      <div>
+        <h3 className="text-xl font-semibold text-white mb-4">Teams ({teams.length})</h3>
         
         {teams.length === 0 ? (
-          <p className="text-gray-500 text-center py-8">No teams created yet</p>
+          <p className="text-neutral-400 text-center py-8">No teams created yet</p>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {teams.map((team, index) => (
@@ -63,12 +63,12 @@ const TeamManagement = ({ event, isOrganizer, onTeamCreated }) => {
   }
 
   return (
-    <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+    <div>
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-xl font-semibold text-gray-900">Teams ({teams.length})</h3>
+        <h3 className="text-xl font-semibold text-white">Teams ({teams.length})</h3>
         <button
           onClick={() => setShowCreateTeam(true)}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+          className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white px-4 py-2 rounded-xl text-sm font-medium transition-all shadow-lg shadow-amber-500/20"
         >
           Create Team
         </button>
@@ -76,20 +76,20 @@ const TeamManagement = ({ event, isOrganizer, onTeamCreated }) => {
 
       {/* Create Team Form */}
       {showCreateTeam && (
-        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-4">
+        <div className="bg-neutral-800 border border-neutral-700 rounded-xl p-4 mb-4">
           <form onSubmit={handleCreateTeam} className="flex items-center space-x-3">
             <input
               type="text"
               value={newTeamName}
               onChange={(e) => setNewTeamName(e.target.value)}
               placeholder="Enter team name..."
-              className="flex-1 bg-white border border-gray-300 rounded-lg px-3 py-2 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="flex-1 bg-neutral-900 border border-neutral-700 rounded-lg px-3 py-2 text-white placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
               required
             />
             <button
               type="submit"
               disabled={loading}
-              className="bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+              className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 disabled:bg-neutral-700 disabled:text-neutral-500 text-white px-4 py-2 rounded-xl text-sm font-medium transition-all shadow-md shadow-amber-500/20"
             >
               {loading ? 'Creating...' : 'Create'}
             </button>
@@ -99,7 +99,7 @@ const TeamManagement = ({ event, isOrganizer, onTeamCreated }) => {
                 setShowCreateTeam(false);
                 setNewTeamName('');
               }}
-              className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+              className="bg-neutral-700 hover:bg-neutral-600 text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors"
             >
               Cancel
             </button>
@@ -109,7 +109,7 @@ const TeamManagement = ({ event, isOrganizer, onTeamCreated }) => {
 
       {/* Teams List */}
       {teams.length === 0 ? (
-        <p className="text-gray-500 text-center py-8">No teams created yet</p>
+        <p className="text-neutral-400 text-center py-8">No teams created yet</p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {teams.map((team, index) => (
@@ -230,17 +230,17 @@ const TeamCard = ({ team, eventId, isOrganizer }) => {
   const hasMoreMembers = teamMembers.length > 3;
 
   return (
-    <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow">
+    <div className="bg-neutral-800 border border-neutral-700 rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow">
       {/* Team Header */}
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h4 className="text-lg font-semibold text-gray-900">{team.teamName}</h4>
-          <p className="text-sm text-gray-500">{teamMembers.length} member{teamMembers.length !== 1 ? 's' : ''}</p>
+          <h4 className="text-lg font-semibold text-white">{team.teamName}</h4>
+          <p className="text-sm text-neutral-400">{teamMembers.length} member{teamMembers.length !== 1 ? 's' : ''}</p>
         </div>
         {isOrganizer && (
           <button
             onClick={() => setShowAddMember(!showAddMember)}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-sm font-medium transition-colors"
+            className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white px-3 py-1.5 rounded-xl text-sm font-medium transition-all shadow-md shadow-amber-500/20"
           >
             {showAddMember ? 'Cancel' : 'Add Member'}
           </button>
@@ -258,29 +258,29 @@ const TeamCard = ({ team, eventId, isOrganizer }) => {
               handleSearchUsers(e.target.value);
             }}
             placeholder="Search users to invite..."
-            className="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full bg-neutral-900 border border-neutral-700 rounded-lg px-3 py-2 text-sm text-white placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
         />
         
         {searchResults.length > 0 && (
-            <div className="mt-2 max-h-40 overflow-y-auto border border-gray-200 rounded-lg bg-white shadow-sm">
+            <div className="mt-2 max-h-40 overflow-y-auto border border-neutral-700 rounded-lg bg-neutral-800 shadow-lg">
               {searchResults.map((user) => (
                 <div
                   key={user._id}
-                  className="flex items-center justify-between p-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
+                  className="flex items-center justify-between p-3 hover:bg-neutral-700 cursor-pointer border-b border-neutral-700 last:border-b-0 transition-colors"
                   onClick={() => handleInviteUser(user._id)}
                 >
                   <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                      <span className="text-blue-600 text-sm font-medium">
+                    <div className="w-8 h-8 bg-gradient-to-br from-amber-500 to-orange-600 rounded-full flex items-center justify-center">
+                      <span className="text-white text-sm font-medium">
                         {user.name.charAt(0).toUpperCase()}
                       </span>
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-gray-900">{user.name}</p>
-                      <p className="text-xs text-gray-500">{user.favoriteSport} • {user.city}</p>
+                      <p className="text-sm font-medium text-white">{user.name}</p>
+                      <p className="text-xs text-neutral-400">{user.favoriteSport} • {user.city}</p>
                     </div>
                   </div>
-                  <span className="text-xs text-blue-600 font-medium">Invite</span>
+                  <span className="text-xs text-amber-400 font-medium">Invite</span>
                 </div>
               ))}
             </div>
@@ -290,35 +290,35 @@ const TeamCard = ({ team, eventId, isOrganizer }) => {
 
       {/* Team Members List */}
       <div className="space-y-3">
-        <h5 className="text-sm font-medium text-gray-700">Team Members</h5>
+        <h5 className="text-sm font-medium text-neutral-400">Team Members</h5>
         
         {teamMembers.length === 0 ? (
-          <div className="text-center py-4 text-gray-500">
+          <div className="text-center py-4 text-neutral-400">
             <p className="text-sm">No members yet</p>
             <p className="text-xs">Invite users to join this team</p>
           </div>
         ) : (
           <div className="space-y-2">
             {displayMembers.map((member, index) => (
-              <div key={member._id || index} className="flex items-center space-x-3 p-2 bg-gray-50 rounded-lg">
-                <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                  <span className="text-green-600 text-sm font-medium">
+              <div key={member._id || index} className="flex items-center space-x-3 p-2 bg-neutral-900/50 rounded-lg border border-neutral-700/50">
+                <div className="w-8 h-8 bg-gradient-to-br from-amber-500 to-orange-600 rounded-full flex items-center justify-center">
+                  <span className="text-white text-sm font-medium">
                     {member.name?.charAt(0).toUpperCase() || 'U'}
                   </span>
                 </div>
                 <div className="flex-1">
-                  <p className="text-sm font-medium text-gray-900">{member.name || 'Unknown User'}</p>
-                  <p className="text-xs text-gray-500">{member.email}</p>
+                  <p className="text-sm font-medium text-white">{member.name || 'Unknown User'}</p>
+                  <p className="text-xs text-neutral-400">{member.email}</p>
                 </div>
                 <div className="flex items-center space-x-2">
                   {index === 0 && (
-                    <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full">Captain</span>
+                    <span className="text-xs bg-amber-500/20 text-amber-400 border border-amber-500/30 px-2 py-1 rounded-full">Captain</span>
                   )}
                   {isOrganizer && (
                     <>
                       <button
                         onClick={() => handlePromoteToCaptain(member._id, member.name)}
-                        className="text-blue-600 hover:text-blue-700 p-1 hover:bg-blue-50 rounded transition-colors"
+                        className="text-amber-400 hover:text-amber-500 p-1 hover:bg-amber-500/10 rounded transition-colors"
                         title="Promote to Captain"
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -327,7 +327,7 @@ const TeamCard = ({ team, eventId, isOrganizer }) => {
                       </button>
                       <button
                         onClick={() => handleRemoveMember(member._id, member.name)}
-                        className="text-red-600 hover:text-red-700 p-1 hover:bg-red-50 rounded transition-colors"
+                        className="text-red-400 hover:text-red-500 p-1 hover:bg-red-500/10 rounded transition-colors"
                         title="Remove Member"
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -343,7 +343,7 @@ const TeamCard = ({ team, eventId, isOrganizer }) => {
             {hasMoreMembers && (
               <button
                 onClick={() => setShowAllMembers(!showAllMembers)}
-                className="w-full text-center py-2 text-sm text-blue-600 hover:text-blue-700 font-medium"
+                className="w-full text-center py-2 text-sm text-amber-400 hover:text-amber-500 font-medium transition-colors"
               >
                 {showAllMembers ? 'Show Less' : `Show ${teamMembers.length - 3} More`}
               </button>
@@ -353,19 +353,19 @@ const TeamCard = ({ team, eventId, isOrganizer }) => {
       </div>
 
       {/* Team Stats */}
-      <div className="mt-4 pt-4 border-t border-gray-200">
+      <div className="mt-4 pt-4 border-t border-neutral-700">
         <div className="grid grid-cols-3 gap-4 text-center">
           <div>
-            <p className="text-lg font-semibold text-blue-600">{team.matchesPlayed || 0}</p>
-            <p className="text-xs text-gray-500">Played</p>
+            <p className="text-lg font-semibold text-amber-500">{team.matchesPlayed || 0}</p>
+            <p className="text-xs text-neutral-400">Played</p>
           </div>
           <div>
-            <p className="text-lg font-semibold text-green-600">{team.matchesWon || 0}</p>
-            <p className="text-xs text-gray-500">Won</p>
+            <p className="text-lg font-semibold text-amber-500">{team.matchesWon || 0}</p>
+            <p className="text-xs text-neutral-400">Won</p>
           </div>
           <div>
-            <p className="text-lg font-semibold text-orange-600">{team.matchesResultPending || 0}</p>
-            <p className="text-xs text-gray-500">Pending</p>
+            <p className="text-lg font-semibold text-amber-500">{team.matchesResultPending || 0}</p>
+            <p className="text-xs text-neutral-400">Pending</p>
           </div>
         </div>
       </div>

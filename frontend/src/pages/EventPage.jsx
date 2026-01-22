@@ -99,10 +99,10 @@ const EventPage = () => {
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'active': return 'bg-gradient-to-r from-green-500 to-green-600';
-      case 'completed': return 'bg-gradient-to-r from-gray-500 to-gray-600';
+      case 'active': return 'bg-gradient-to-r from-amber-500 to-amber-600';
+      case 'completed': return 'bg-gradient-to-r from-neutral-500 to-neutral-600';
       case 'cancelled': return 'bg-gradient-to-r from-red-500 to-red-600';
-      default: return 'bg-gradient-to-r from-gray-400 to-gray-500';
+      default: return 'bg-gradient-to-r from-neutral-400 to-neutral-500';
     }
   };
 
@@ -361,10 +361,10 @@ const EventPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-neutral-900 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-          <div className="text-gray-600 text-lg font-semibold animate-pulse">
+          <div className="animate-spin rounded-full h-12 w-12 border-2 border-neutral-700 border-t-amber-500 mx-auto mb-4"></div>
+          <div className="text-neutral-300 text-base font-medium">
             Loading event...
           </div>
         </div>
@@ -374,14 +374,14 @@ const EventPage = () => {
 
   if (error || !event) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-neutral-900 flex items-center justify-center">
         <div className="text-center">
           <div className="text-6xl mb-4">❌</div>
-          <h1 className="text-gray-900 text-2xl font-bold mb-2">Event Not Found</h1>
-          <p className="text-gray-600 mb-6">The event you're looking for doesn't exist or you don't have access to it.</p>
+          <h1 className="text-white text-2xl font-semibold mb-2">Event Not Found</h1>
+          <p className="text-neutral-400 mb-6">The event you're looking for doesn't exist or you don't have access to it.</p>
           <button
             onClick={() => window.location.href = '/home'}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+            className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white px-6 py-3 rounded-xl font-medium transition-all shadow-lg shadow-amber-500/20"
           >
             Go Back Home
           </button>
@@ -391,29 +391,24 @@ const EventPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black">
-      {/* Background overlay with subtle texture */}
-      <div className="absolute inset-0 bg-gradient-to-br from-amber-900/20 via-gray-800/30 to-black/40"></div>
-      
-      {/* Content */}
-      <div className="relative z-10">
+    <div className="min-h-screen bg-neutral-900">
       {/* Header */}
-      <header className="bg-gray-100/95 backdrop-blur-md border-b border-gray-300 shadow-sm">
+      <header className="bg-neutral-900 border-b border-neutral-800 shadow-sm sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center space-x-3">
               <button
                 onClick={() => window.location.href = '/home'}
-                className="text-gray-600 hover:text-gray-900 transition-colors"
+                className="text-neutral-400 hover:text-white transition-colors p-2 rounded-lg hover:bg-neutral-800"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                 </svg>
               </button>
-              <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-blue-800 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-lg">SS</span>
+              <div className="w-9 h-9 bg-gradient-to-br from-amber-500 to-orange-600 rounded-lg flex items-center justify-center shadow-lg">
+                <span className="text-white font-bold text-base">SS</span>
               </div>
-              <h1 className="text-gray-900 text-xl font-bold">Street Sports INC</h1>
+              <h1 className="text-white text-lg font-semibold">StreetSports</h1>
             </div>
           </div>
         </div>
@@ -424,8 +419,8 @@ const EventPage = () => {
 
         {/* Quick Actions for Organizers */}
         {isOrganizer && (
-          <div className="bg-gray-200/90 border border-gray-300 rounded-xl p-4 mb-6">
-            <h3 className="text-lg font-semibold text-gray-800 mb-3">Quick Actions</h3>
+          <div className="bg-neutral-800 border border-neutral-700 rounded-2xl p-6 mb-6 shadow-lg">
+            <h3 className="text-lg font-semibold text-white mb-4">Quick Actions</h3>
             <div className="flex flex-wrap gap-3">
               <button
                 onClick={() => {
@@ -459,7 +454,7 @@ const EventPage = () => {
                   };
                   fileInput.click();
                 }}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center space-x-2"
+                className="bg-neutral-700 hover:bg-amber-500 text-white px-4 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center space-x-2"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -472,7 +467,7 @@ const EventPage = () => {
                   setModalType('team');
                   setShowModal(true);
                 }}
-                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center space-x-2"
+                className="bg-neutral-700 hover:bg-amber-500 text-white px-4 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center space-x-2"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -490,7 +485,7 @@ const EventPage = () => {
                   setShowModal(true);
                 }}
                 disabled={event.teams?.length < 2}
-                className="bg-purple-600 hover:bg-purple-700 disabled:bg-gray-400 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center space-x-2"
+                className="bg-neutral-700 hover:bg-amber-500 disabled:bg-neutral-800 disabled:text-neutral-500 text-white px-4 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center space-x-2"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
@@ -500,7 +495,7 @@ const EventPage = () => {
               
               <button
                 onClick={() => setShowPendingPlayersModal(true)}
-                className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center space-x-2"
+                className="bg-neutral-700 hover:bg-amber-500 text-white px-4 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center space-x-2"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
@@ -510,7 +505,7 @@ const EventPage = () => {
               
               <button
                 onClick={() => setShowQRScanner(true)}
-                className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center space-x-2"
+                className="bg-neutral-700 hover:bg-amber-500 text-white px-4 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center space-x-2"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
@@ -520,7 +515,7 @@ const EventPage = () => {
               
               <button
                 onClick={() => setShowTicketValidator(true)}
-                className="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center space-x-2"
+                className="bg-neutral-700 hover:bg-amber-500 text-white px-4 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center space-x-2"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -532,21 +527,21 @@ const EventPage = () => {
         )}
 
         {/* Event Header */}
-        <div className="bg-gray-200/90 border border-gray-300 rounded-xl p-6 shadow-sm mb-6">
+        <div className="bg-neutral-800 border border-neutral-700 rounded-2xl p-6 shadow-lg mb-6">
           <div className="flex items-start justify-between mb-6">
             <div className="flex items-center space-x-4">
               <span className="text-4xl">{getSportIcon(event.sportType)}</span>
               <div>
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">{event.eventName}</h1>
-                <p className="text-xl text-gray-600">{event.sportType}</p>
+                <h1 className="text-3xl font-semibold text-white mb-2">{event.eventName}</h1>
+                <p className="text-xl text-neutral-400">{event.sportType}</p>
               </div>
             </div>
             <div className="flex items-center space-x-3">
-              <span className={`px-3 py-1 rounded-full text-sm font-medium text-white ${getStatusColor(event.status)}`}>
+              <span className={`px-3 py-1.5 rounded-full text-sm font-medium text-white ${getStatusColor(event.status)}`}>
                 {event.status}
               </span>
               {isOrganizer && (
-                <span className="px-3 py-1 rounded-full text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-blue-800">
+                <span className="px-3 py-1.5 rounded-full text-sm font-medium text-white bg-gradient-to-r from-amber-500 to-amber-600">
                   Organizer
                 </span>
               )}
@@ -557,121 +552,123 @@ const EventPage = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
             {/* Event Details */}
             <div className="lg:col-span-2">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-4">
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">Event Start Date</h3>
-                    <p className="text-gray-600">{formatDate(event.startDate)}</p>
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">Registration Deadline</h3>
-                    <p className="text-gray-600">{formatDate(event.registrationDeadline)}</p>
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">Event Duration</h3>
-                    <p className="text-gray-600">{event.duration} day{event.duration > 1 ? 's' : ''}</p>
-                  </div>
-                </div>
-                <div className="space-y-4">
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">Teams</h3>
-                    <p className="text-2xl font-bold text-blue-600">{event.teams?.length || 0}</p>
-                  </div>
-                  <div className="relative">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">Players</h3>
-                    <div className="flex items-center space-x-2">
-                      <p className="text-2xl font-bold text-green-600">{getTotalPlayersCount()}</p>
-                      <button
-                        onClick={() => setShowPlayersDropdown(!showPlayersDropdown)}
-                        className="text-gray-500 hover:text-gray-700 transition-colors"
-                        title="View players list"
-                      >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                        </svg>
-                      </button>
+              <div className="bg-neutral-800/50 rounded-xl p-6 border border-neutral-700/50">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-4">
+                    <div>
+                      <h3 className="text-sm font-medium text-neutral-400 mb-1">Event Start Date</h3>
+                      <p className="text-white font-medium">{formatDate(event.startDate)}</p>
                     </div>
-                    
-                    {/* Players Dropdown */}
-                    {showPlayersDropdown && (
-                      <div className="absolute top-full left-0 mt-2 bg-gray-200/95 border border-gray-300 rounded-lg shadow-lg z-10 w-80 max-h-60 overflow-y-auto">
-                        <div className="p-3">
-                          <h4 className="font-semibold text-gray-900 mb-2">All Players</h4>
-                          {getAllPlayers().length === 0 ? (
-                            <p className="text-gray-500 text-sm">No players registered yet</p>
-                          ) : (
-                            <div className="space-y-2">
-                              {getAllPlayers().map((player, index) => (
-                                <div key={player._id || index} className="flex items-center justify-between bg-gray-50 rounded-lg p-2">
-                                  <div>
-                                    <p className="text-sm font-medium text-gray-900">{player.name}</p>
-                                    <p className="text-xs text-gray-600">{player.email}</p>
-                                    <p className={`text-xs ${player.source === 'team' ? 'text-blue-600' : 'text-orange-600'}`}>
-                                      {player.teamName} {player.source === 'team' ? '(In Team)' : '(No Team)'}
-                                    </p>
-                                  </div>
-                                  {player.favoriteSport && (
-                                    <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
-                                      {player.favoriteSport}
-                                    </span>
-                                  )}
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                        </div>
+                    <div>
+                      <h3 className="text-sm font-medium text-neutral-400 mb-1">Registration Deadline</h3>
+                      <p className="text-white font-medium">{formatDate(event.registrationDeadline)}</p>
+                    </div>
+                    <div>
+                      <h3 className="text-sm font-medium text-neutral-400 mb-1">Event Duration</h3>
+                      <p className="text-white font-medium">{event.duration} day{event.duration > 1 ? 's' : ''}</p>
+                    </div>
+                  </div>
+                  <div className="space-y-4">
+                    <div>
+                      <h3 className="text-sm font-medium text-neutral-400 mb-1">Teams</h3>
+                      <p className="text-2xl font-bold text-amber-500">{event.teams?.length || 0}</p>
+                    </div>
+                    <div className="relative">
+                      <h3 className="text-sm font-medium text-neutral-400 mb-1">Players</h3>
+                      <div className="flex items-center space-x-2">
+                        <p className="text-2xl font-bold text-amber-500">{getTotalPlayersCount()}</p>
+                        <button
+                          onClick={() => setShowPlayersDropdown(!showPlayersDropdown)}
+                          className="text-neutral-400 hover:text-amber-500 transition-colors"
+                          title="View players list"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                          </svg>
+                        </button>
                       </div>
-                    )}
-                  </div>
-                  <div className="relative">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">Audience</h3>
-                    <div className="flex items-center space-x-2">
-                      <p className="text-2xl font-bold text-purple-600">{event.audience?.users?.length || 0}</p>
-                      <button
-                        onClick={() => setShowAudienceDropdown(!showAudienceDropdown)}
-                        className="text-gray-500 hover:text-gray-700 transition-colors"
-                        title="View audience list"
-                      >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                        </svg>
-                      </button>
-                    </div>
-                    
-                    {/* Audience Dropdown */}
-                    {showAudienceDropdown && (
-                      <div className="absolute top-full left-0 mt-2 bg-gray-200/95 border border-gray-300 rounded-lg shadow-lg z-10 w-80 max-h-60 overflow-y-auto">
-                        <div className="p-3">
-                          <h4 className="font-semibold text-gray-900 mb-2">Audience Members</h4>
-                          {(!event.audience?.users || event.audience.users.length === 0) ? (
-                            <p className="text-gray-500 text-sm">No audience members yet</p>
-                          ) : (
-                            <div className="space-y-2">
-                              {event.audience.users.map((member, index) => (
-                                <div key={member._id || index} className="flex items-center justify-between bg-gray-50 rounded-lg p-2">
-                                  <div>
-                                    <p className="text-sm font-medium text-gray-900">{member.name}</p>
-                                    <p className="text-xs text-gray-600">{member.email}</p>
-                                    {member.city && (
-                                      <p className="text-xs text-gray-500">{member.city}</p>
+                      
+                      {/* Players Dropdown */}
+                      {showPlayersDropdown && (
+                        <div className="absolute top-full left-0 mt-2 bg-neutral-800 border border-neutral-700 rounded-xl shadow-xl z-10 w-80 max-h-60 overflow-y-auto">
+                          <div className="p-3">
+                            <h4 className="font-semibold text-white mb-2">All Players</h4>
+                            {getAllPlayers().length === 0 ? (
+                              <p className="text-neutral-400 text-sm">No players registered yet</p>
+                            ) : (
+                              <div className="space-y-2">
+                                {getAllPlayers().map((player, index) => (
+                                  <div key={player._id || index} className="flex items-center justify-between bg-neutral-700/50 rounded-lg p-2">
+                                    <div>
+                                      <p className="text-sm font-medium text-white">{player.name}</p>
+                                      <p className="text-xs text-neutral-400">{player.email}</p>
+                                      <p className={`text-xs ${player.source === 'team' ? 'text-amber-400' : 'text-neutral-400'}`}>
+                                        {player.teamName} {player.source === 'team' ? '(In Team)' : '(No Team)'}
+                                      </p>
+                                    </div>
+                                    {player.favoriteSport && (
+                                      <span className="text-xs bg-amber-500/20 text-amber-400 px-2 py-1 rounded border border-amber-500/30">
+                                        {player.favoriteSport}
+                                      </span>
                                     )}
                                   </div>
-                                  {member.favoriteSport && (
-                                    <span className="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded">
-                                      {member.favoriteSport}
-                                    </span>
-                                  )}
-                                </div>
-                              ))}
-                            </div>
-                          )}
+                                ))}
+                              </div>
+                            )}
+                          </div>
                         </div>
+                      )}
+                    </div>
+                    <div className="relative">
+                      <h3 className="text-sm font-medium text-neutral-400 mb-1">Audience</h3>
+                      <div className="flex items-center space-x-2">
+                        <p className="text-2xl font-bold text-amber-500">{event.audience?.users?.length || 0}</p>
+                        <button
+                          onClick={() => setShowAudienceDropdown(!showAudienceDropdown)}
+                          className="text-neutral-400 hover:text-amber-500 transition-colors"
+                          title="View audience list"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                          </svg>
+                        </button>
                       </div>
-                    )}
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">Matches</h3>
-                    <p className="text-2xl font-bold text-blue-600">{event.matches?.length || 0}</p>
+                      
+                      {/* Audience Dropdown */}
+                      {showAudienceDropdown && (
+                        <div className="absolute top-full left-0 mt-2 bg-neutral-800 border border-neutral-700 rounded-xl shadow-xl z-10 w-80 max-h-60 overflow-y-auto">
+                          <div className="p-3">
+                            <h4 className="font-semibold text-white mb-2">Audience Members</h4>
+                            {(!event.audience?.users || event.audience.users.length === 0) ? (
+                              <p className="text-neutral-400 text-sm">No audience members yet</p>
+                            ) : (
+                              <div className="space-y-2">
+                                {event.audience.users.map((member, index) => (
+                                  <div key={member._id || index} className="flex items-center justify-between bg-neutral-700/50 rounded-lg p-2">
+                                    <div>
+                                      <p className="text-sm font-medium text-white">{member.name}</p>
+                                      <p className="text-xs text-neutral-400">{member.email}</p>
+                                      {member.city && (
+                                        <p className="text-xs text-neutral-500">{member.city}</p>
+                                      )}
+                                    </div>
+                                    {member.favoriteSport && (
+                                      <span className="text-xs bg-amber-500/20 text-amber-400 px-2 py-1 rounded border border-amber-500/30">
+                                        {member.favoriteSport}
+                                      </span>
+                                    )}
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                    <div>
+                      <h3 className="text-sm font-medium text-neutral-400 mb-1">Matches</h3>
+                      <p className="text-2xl font-bold text-amber-500">{event.matches?.length || 0}</p>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -692,14 +689,14 @@ const EventPage = () => {
 
           {/* Join/Apply Section - Only show if user is not organizer */}
           {currentUser && !isOrganizer && (
-            <div className="bg-gray-200/90 border border-gray-300 rounded-lg p-6 mb-6">
-              <h3 className="text-lg font-semibold text-gray-800 mb-4">Join This Event</h3>
+            <div className="bg-neutral-800 border border-neutral-700 rounded-xl p-6 mb-6">
+              <h3 className="text-lg font-semibold text-white mb-4">Join This Event</h3>
               <div className="flex flex-wrap gap-3">
                 {/* Join as Audience */}
                 {!isInAudience() && (
                   <button
                     onClick={handleJoinAudience}
-                    className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-medium transition-colors flex items-center space-x-2"
+                    className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white px-6 py-3 rounded-xl font-medium transition-all flex items-center space-x-2 shadow-lg shadow-amber-500/20"
                   >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -716,7 +713,7 @@ const EventPage = () => {
                   <div className="relative">
                     <button
                       onClick={handleApplyAsPlayer}
-                      className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition-colors flex items-center space-x-2"
+                      className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white px-6 py-3 rounded-xl font-medium transition-all flex items-center space-x-2 shadow-lg shadow-amber-500/20"
                     >
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -728,14 +725,14 @@ const EventPage = () => {
                     
                     {/* Apply to specific teams dropdown */}
                     {event.teams && event.teams.length > 0 && (
-                      <div className="absolute top-full left-0 mt-2 bg-gray-200/95 border border-gray-300 rounded-lg shadow-lg z-10 min-w-48">
+                      <div className="absolute top-full left-0 mt-2 bg-neutral-800 border border-neutral-700 rounded-xl shadow-xl z-10 min-w-48">
                         <div className="p-2">
-                          <div className="text-xs text-gray-500 px-2 py-1">Or apply to specific team:</div>
+                          <div className="text-xs text-neutral-400 px-2 py-1">Or apply to specific team:</div>
                           {event.teams.map(team => (
                             <button
                               key={team._id}
                               onClick={() => handleApplyToTeam(team._id)}
-                              className="w-full text-left px-3 py-2 hover:bg-gray-100 rounded text-sm"
+                              className="w-full text-left px-3 py-2 hover:bg-neutral-700 rounded-lg text-sm text-white transition-colors"
                             >
                               {team.teamName}
                             </button>
@@ -748,17 +745,17 @@ const EventPage = () => {
                 
                 {/* Status indicators */}
                 {isInAudience() && (
-                  <span className="bg-purple-100 text-purple-800 px-3 py-2 rounded-lg text-sm font-medium">
+                  <span className="bg-amber-500/20 text-amber-400 border border-amber-500/30 px-3 py-2 rounded-xl text-sm font-medium">
                     ✓ In Audience
                   </span>
                 )}
                 {isParticipant() && (
-                  <span className="bg-yellow-100 text-yellow-800 px-3 py-2 rounded-lg text-sm font-medium">
+                  <span className="bg-yellow-500/20 text-yellow-400 border border-yellow-500/30 px-3 py-2 rounded-xl text-sm font-medium">
                     ⏳ Pending Approval
                   </span>
                 )}
                 {isInTeam() && (
-                  <span className="bg-green-100 text-green-800 px-3 py-2 rounded-lg text-sm font-medium">
+                  <span className="bg-green-500/20 text-green-400 border border-green-500/30 px-3 py-2 rounded-xl text-sm font-medium">
                     ✓ Team Member
                   </span>
                 )}
@@ -767,10 +764,10 @@ const EventPage = () => {
           )}
 
           {/* Event Link */}
-          <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Event Link</h3>
+          <div className="bg-neutral-800/50 border border-neutral-700/50 rounded-xl p-4">
+            <h3 className="text-sm font-medium text-neutral-400 mb-2">Event Link</h3>
             <div className="flex items-center space-x-2">
-              <code className="flex-1 bg-white border border-gray-200 rounded px-3 py-2 text-xs sm:text-sm text-gray-800 truncate">
+              <code className="flex-1 bg-neutral-900 border border-neutral-700 rounded-lg px-3 py-2 text-xs sm:text-sm text-neutral-300 truncate">
                 {window.location.origin}/event/{event._id}
               </code>
               <button
@@ -778,7 +775,7 @@ const EventPage = () => {
                   navigator.clipboard.writeText(`${window.location.origin}/event/${event._id}`);
                   alert('Event link copied to clipboard!');
                 }}
-                className="bg-blue-600 hover:bg-blue-700 text-white p-2 sm:px-4 sm:py-2 rounded-lg transition-colors flex items-center justify-center"
+                className="bg-amber-500 hover:bg-amber-600 text-white p-2 sm:px-4 sm:py-2 rounded-lg transition-colors flex items-center justify-center"
                 title="Copy Event Link"
               >
                 <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -792,20 +789,24 @@ const EventPage = () => {
 
         {/* Teams Management */}
         <div className="mb-6">
-          <TeamManagement 
-            event={event} 
-            isOrganizer={isOrganizer} 
-            onTeamCreated={handleTeamCreated}
-          />
+          <div className="bg-neutral-800/50 rounded-2xl p-6 border border-neutral-700/50">
+            <TeamManagement 
+              event={event} 
+              isOrganizer={isOrganizer} 
+              onTeamCreated={handleTeamCreated}
+            />
+          </div>
         </div>
 
         {/* Matches Management */}
         <div className="mb-6">
-          <MatchManagement 
-            event={event} 
-            isOrganizer={isOrganizer} 
-            onMatchCreated={handleMatchCreated}
-          />
+          <div className="bg-neutral-800/50 rounded-2xl p-6 border border-neutral-700/50">
+            <MatchManagement 
+              event={event} 
+              isOrganizer={isOrganizer} 
+              onMatchCreated={handleMatchCreated}
+            />
+          </div>
         </div>
       </main>
 
@@ -854,7 +855,6 @@ const EventPage = () => {
         onClose={() => setShowTicketValidator(false)}
         eventId={eventId}
       />
-      </div>
     </div>
   );
 };
